@@ -415,6 +415,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     Her kan du lese nyheter, og etter hvert kanskje mer?
                 </span>
                 <span class="article-paragraph">
+                    Disse sidene er et rent hobbyprosjekt, og er ikke tilknyttet NRK, Yr eller andre tjenester som brukes for å gjenskape følelsen av tekst-TV.
+                </span>
+                <span class="article-paragraph">
                     Prosjektet bruker fonten "Teletext50", som er laget av
                     <a href="https://github.com/glxxyz/bedstead" target="_blank">glxxyz</a>
                     og er tilgjengelig under en CC0-1.0-lisens.
