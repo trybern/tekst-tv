@@ -212,9 +212,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .map(p => `<span class="article-paragraph">${p}</span>`)
             .join('');
 
+        if(article.category) {
+            html += article.category.toUpperCase();
+        }
         html += `<span class="article-title">${article.title.toUpperCase()}</span>`;
         html += `<span class="time">${time}</span> <span class="article-description">${descriptionHtml}</span>`;
         html += `<span class="published-info">Publisert: ${pubDate.toLocaleString('no-NO')}</span>`;
+
+        html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK</a></div>`;
         
         html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
 

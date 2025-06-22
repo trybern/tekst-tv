@@ -226,6 +226,11 @@ a:hover {
     font-size: 0.875rem;
 }
 
+.external-link-container {
+    margin-top: 1.5rem;
+    text-align: left;
+}
+
 .pagination-controls {
     display: flex;
     justify-content: space-between;
