@@ -15,10 +15,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastUpdated = null;
     let frontPage = 0;
     const articlesPerPage = 5;
+    let autoUpdateEnabled = true;
+    let autoUpdateInterval = null;
 
     contentElement.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') {
-            const feedIndex = e.target.dataset.feedIndex;
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        if (link.hash === '#toggle-autoupdate') {
+            e.preventDefault();
+            autoUpdateEnabled = !autoUpdateEnabled;
+            if (autoUpdateEnabled) {
+                startAutoUpdate();
+            } else {
+                stopAutoUpdate();
+            }
+            render();
+            return;
+        }
+        
+        if (link.tagName === 'A') {
+            const feedIndex = link.dataset.feedIndex;
             if (feedIndex !== undefined) {
                 e.preventDefault();
                 const newIndex = parseInt(feedIndex, 10);
@@ -29,15 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (e.target.hash) {
-                if (e.target.hash === '#next') {
+            if (link.hash) {
+                if (link.hash === '#next') {
                     e.preventDefault();
                     const totalPages = Math.ceil(articles.length / articlesPerPage);
                     if (frontPage < totalPages - 1) {
                         frontPage++;
                         renderFrontPage();
                     }
-                } else if (e.target.hash === '#prev') {
+                } else if (link.hash === '#prev') {
                     e.preventDefault();
                     if (frontPage > 0) {
                         frontPage--;
@@ -48,9 +65,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const fetchNews = async () => {
+    const stopAutoUpdate = () => {
+        if (autoUpdateInterval) {
+            clearInterval(autoUpdateInterval);
+            autoUpdateInterval = null;
+            console.log('Auto-oppdatering stoppet.');
+        }
+    };
+
+    const startAutoUpdate = () => {
+        stopAutoUpdate(); // Stopper forrige for å unngå duplikater
+        autoUpdateInterval = setInterval(() => {
+            console.log('Auto-oppdaterer nyheter...');
+            fetchNews(true); // Stille oppdatering
+        }, 5 * 60 * 1000);
+        console.log('Auto-oppdatering startet (hvert 5. minutt).');
+    };
+
+    const fetchNews = async (isSilent = false) => {
         try {
-            contentElement.innerHTML = 'Laster nyheter...';
+            if (!isSilent) {
+                contentElement.innerHTML = 'Laster nyheter...';
+            }
             const response = await fetch(proxyUrl + encodeURIComponent(feeds[currentFeedIndex].url));
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,7 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
             lastUpdated = new Date();
-            frontPage = 0; // Reset to first page
+            if (!isSilent) {
+                frontPage = 0; // Reset to first page
+            }
             render();
         } catch (error) {
             console.error("Kunne ikke laste nyheter:", error);
@@ -131,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="index-header">Oversikt</div>
     <div class="index-links">
         <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-dots"></span><span class="front-page-page">800</span></a>
+        <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-dots"></span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
     </div>
 </div>
 `;
@@ -176,6 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `<span class="article-title">${article.title.toUpperCase()}</span>`;
         html += `<span class="time">${time}</span> <span class="article-description">${descriptionHtml}</span>`;
         html += `<span class="published-info">Publisert: ${pubDate.toLocaleString('no-NO')}</span>`;
+        
+        html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
 
         contentElement.innerHTML = html;
     };
@@ -199,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="colophon-navigation">
                 <a href="#">Tilbake til forsiden (100)</a>
             </div>
+            <div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>
         `;
         contentElement.innerHTML = html;
     };
@@ -223,5 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.addEventListener('hashchange', render);
-    fetchNews();
+    fetchNews().then(() => {
+        if (autoUpdateEnabled) {
+            startAutoUpdate();
+        }
+    });
 });

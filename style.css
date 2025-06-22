@@ -190,14 +190,18 @@ a:hover {
 
 .article-navigation {
     margin-top: 1rem;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
     margin-bottom: 1rem;
 }
 
 .article-navigation a {
     font-size: 0.875rem;
+}
+
+.article-navigation a:first-child {
+    text-align: left;
 }
 
 .article-navigation a:nth-child(2) {
@@ -214,6 +218,12 @@ a:hover {
 
 .colophon-navigation {
     text-align: center;
+}
+
+.autoupdate-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.875rem;
 }
 
 .pagination-controls {
