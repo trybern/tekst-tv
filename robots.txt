@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://teksttv.veldigsnill.no/sitemap.xml 
