@@ -73,6 +73,7 @@ a:hover {
 .article-title {
     font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
     font-size: 3rem;
+    letter-spacing: 0.0125em;
     display: block;
     line-height: 1.1;
     margin-bottom: 0.5rem;
