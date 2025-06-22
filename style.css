@@ -37,6 +37,7 @@
     --time-color: #ee0;
     --border-color: #444;
     --dots-color: #888;
+    --section-background: #0000cd;
 }
 
 body {
@@ -44,21 +45,20 @@ body {
     color: var(--text-color);
     font-family: 'Teletext50', 'Courier New', Courier, monospace;
     display: flex;
-    padding-top: 6rem;
     height: 100vh;
-    margin-left: auto;
-    margin-right: auto;
-    overflow: hidden;
+    margin: 0;
 }
 
 #teletext-container {
-    max-width: 50rem;
+    width: 50rem;
+    max-width: 100%;
     background-color: var(--background-color);
     box-sizing: border-box;
     padding: 1.5rem;
     font-size: 1.25rem;
     line-height: 1.2;
     image-rendering: pixelated;
+    margin: 6rem auto 0;
 }
 
 a {
@@ -130,8 +130,17 @@ a:hover {
 }
 
 .header-row {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+}
+
+.site-title-header {
+    text-align: center;
+}
+
+.header-time {
+    text-align: right;
 }
 
 .front-page-link {
@@ -198,6 +207,53 @@ a:hover {
 
 .article-navigation a:last-child {
     text-align: right;
+}
+
+.article-colophon {
+    padding-bottom: 2rem;
+}
+
+.colophon-navigation {
+    text-align: center;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+}
+
+.pagination-controls > * {
+    flex-basis: 50%;
+}
+
+.pagination-controls > a:last-child,
+.pagination-controls > span:last-child {
+    text-align: right;
+}
+
+.horizontal-rule {
+    color: var(--dots-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.index-section {
+    margin-top: 1rem;
+}
+
+.index-header {
+    background-color: var(--section-background);
+    color: var(--text-color);
+    text-align: center;
+    padding: 0.2rem 0;
+    margin-bottom: 0.5rem;
+}
+
+.index-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 2rem;
 }
 
 @media (max-width: 768px) {

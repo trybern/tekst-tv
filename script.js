@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let articles = [];
     let lastUpdated = null;
     let frontPage = 0;
-    const articlesPerPage = 10;
+    const articlesPerPage = 5;
 
     contentElement.addEventListener('click', (e) => {
         if (e.target.tagName === 'A') {
@@ -108,19 +108,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = feedSelectorHtml;
         pageArticles.forEach(article => {
-            html += `<a href="#${article.page}" class="front-page-link">
-    <span class="front-page-title">${article.title}</span>
-    <span class="front-page-page">${article.page}</span>
-</a>\n`;
+            html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${article.title}</span><span class="front-page-dots"></span><span class="front-page-page">${article.page}</span></a>\n`;
         });
 
         html += `\n`;
+
+        html += '<div class="pagination-controls">';
         if (frontPage > 0) {
-            html += `<a href="#prev"> <- Forrige </a>`;
+            html += `<a href="#prev"><- Forrige</a>`;
+        } else {
+            html += '<span></span>';
         }
         if (frontPage < totalPages - 1) {
-            html += `<a href="#next" style="float: right;"> Neste -> </a>`;
+            html += `<a href="#next">Neste -></a>`;
+        } else {
+            html += '<span></span>';
         }
+        html += '</div>';
+
+        html += `
+<div class="index-section">
+    <div class="index-header">Oversikt</div>
+    <div class="index-links">
+        <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-dots"></span><span class="front-page-page">800</span></a>
+    </div>
+</div>
+`;
         
         contentElement.innerHTML = html;
     };
@@ -167,12 +180,37 @@ document.addEventListener('DOMContentLoaded', () => {
         contentElement.innerHTML = html;
     };
 
+    const renderColophonPage = () => {
+        renderHeader(`Side 800`);
+
+        const html = `
+            <div class="article-colophon">
+                <span class="article-title">OM DENNE SIDEN</span>
+                <span class="article-paragraph">
+                    Dette er en hyllest til tekst-TV, <a href="https://veldigsnill.no" target="_blank">laget av Trygve</a>.
+                    Her kan du lese nyheter, og etter hvert kanskje mer?
+                </span>
+                <span class="article-paragraph">
+                    Prosjektet bruker fonten "Teletext50", som er laget av
+                    <a href="https://github.com/glxxyz/bedstead" target="_blank">glxxyz</a>
+                    og er tilgjengelig under en CC0-1.0-lisens.
+                </span>
+            </div>
+            <div class="colophon-navigation">
+                <a href="#">Tilbake til forsiden (100)</a>
+            </div>
+        `;
+        contentElement.innerHTML = html;
+    };
+
     const render = () => {
         const hash = window.location.hash;
 
         if (hash) {
             const page = parseInt(hash.substring(1));
-            if (!isNaN(page) && page > 100) {
+            if (page === 800) {
+                renderColophonPage();
+            } else if (!isNaN(page) && page > 100) {
                 renderArticlePage(page);
             } else {
                 frontPage = 0;
