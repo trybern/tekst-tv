@@ -45,7 +45,6 @@ body {
     color: var(--text-color);
     font-family: 'Teletext50', 'Courier New', Courier, monospace;
     display: flex;
-    height: 100vh;
     margin: 0;
 }
 
@@ -58,7 +57,7 @@ body {
     font-size: 1.25rem;
     line-height: 1.2;
     image-rendering: pixelated;
-    margin: 6rem auto 0;
+    margin: 6rem auto;
 }
 
 a {
