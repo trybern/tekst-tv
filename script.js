@@ -18,6 +18,52 @@ document.addEventListener('DOMContentLoaded', () => {
     let autoUpdateEnabled = true;
     let autoUpdateInterval = null;
 
+    const weatherSymbolTranslations = {
+        clearsky: "Klarvær",
+        fair: "Lettskyet",
+        partlycloudy: "Delvis skyet",
+        cloudy: "Skyet",
+        rain: "Regn",
+        lightrain: "Lett regn",
+        heavyrain: "Kraftig regn",
+        rainshowers: "Regnbyger",
+        lightrainshowers: "Lette regnbyger",
+        heavyrainshowers: "Kraftige regnbyger",
+        rainandthunder: "Regn og torden",
+        heavyrainandthunder: "Kraftig regn og torden",
+        lightrainandthunder: "Lett regn og torden",
+        rainshowersandthunder: "Regnbyger og torden",
+        lightrainshowersandthunder: "Lette regnbyger og torden",
+        heavyrainshowersandthunder: "Kraftige regnbyger og torden",
+        sleet: "Sludd",
+        lightsleet: "Lett sludd",
+        heavysleet: "Kraftig sludd",
+        sleetshowers: "Sluddbyger",
+        lightsleetshowers: "Lette sluddbyger",
+        heavysleetshowers: "Kraftige sluddbyger",
+        sleetandthunder: "Sludd og torden",
+        lightsleetandthunder: "Lett sludd og torden",
+        heavysleetandthunder: "Kraftig sludd og torden",
+        sleetshowersandthunder: "Sluddbyger og torden",
+        lightsleetshowersandthunder: "Lette sluddbyger og torden",
+        heavysleetshowersandthunder: "Kraftige sluddbyger og torden",
+        snow: "Snø",
+        lightsnow: "Lett snø",
+        heavysnow: "Kraftig snø",
+        snowshowers: "Snøbyger",
+        lightsnowshowers: "Lette snøbyger",
+        heavysnowshowers: "Kraftige snøbyger",
+        snowandthunder: "Snø og torden",
+        lightsnowandthunder: "Lett snø og torden",
+        heavysnowandthunder: "Kraftig snø og torden",
+        snowshowersandthunder: "Snøbyger og torden",
+        lightsnowshowersandthunder: "Lette snøbyger og torden",
+        heavysnowshowersandthunder: "Kraftige snøbyger og torden",
+        fog: "Tåke",
+        lightssleetshowersandthunder: "Lette sluddbyger og torden",
+        lightssnowshowersandthunder: "Lette snøbyger og torden",
+    };
+
     contentElement.addEventListener('click', (e) => {
         const link = e.target.closest('a');
         if (!link) return;
@@ -169,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="index-header">Oversikt</div>
     <div class="index-links">
         <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-dots"></span><span class="front-page-page">800</span></a>
+        <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-dots"></span><span class="front-page-page">200</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-dots"></span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
     </div>
 </div>
@@ -226,6 +273,136 @@ document.addEventListener('DOMContentLoaded', () => {
         contentElement.innerHTML = html;
     };
 
+    const processWeatherData = (data) => {
+        const dailyData = {};
+    
+        data.properties.timeseries.forEach(item => {
+            const date = item.time.split('T')[0];
+            if (!dailyData[date]) {
+                dailyData[date] = {
+                    temperatures: [],
+                    precipitations: [],
+                    symbols: {},
+                    windSpeeds: []
+                };
+            }
+            
+            if (item.data.instant?.details?.air_temperature !== undefined) {
+                dailyData[date].temperatures.push(item.data.instant.details.air_temperature);
+            }
+            if (item.data.instant?.details?.wind_speed !== undefined) {
+                dailyData[date].windSpeeds.push(item.data.instant.details.wind_speed);
+            }
+    
+            if (item.data.next_1_hours?.details?.precipitation_amount !== undefined) {
+                dailyData[date].precipitations.push(item.data.next_1_hours.details.precipitation_amount);
+            }
+    
+            if (item.data.next_1_hours?.summary?.symbol_code) {
+                const symbol = item.data.next_1_hours.summary.symbol_code;
+                const hour = parseInt(item.time.split('T')[1].split(':')[0], 10);
+                if (hour >= 11 && hour <= 14) {
+                     dailyData[date].daySymbol = symbol;
+                }
+                dailyData[date].symbols[symbol] = (dailyData[date].symbols[symbol] || 0) + 1;
+            }
+        });
+    
+        const processedForecasts = Object.keys(dailyData).map(date => {
+            const day = dailyData[date];
+            const dayDate = new Date(date);
+    
+            const now = new Date();
+            if (dayDate.setHours(0,0,0,0) < now.setHours(0,0,0,0)) {
+                return null;
+            }
+    
+            const dayName = dayDate.toLocaleDateString('no-NO', { weekday: 'long' });
+    
+            const minTemp = Math.min(...day.temperatures);
+            const maxTemp = Math.max(...day.temperatures);
+            const totalPrecipitation = day.precipitations.reduce((a, b) => a + b, 0);
+            const avgWind = day.windSpeeds.length ? day.windSpeeds.reduce((a, b) => a + b, 0) / day.windSpeeds.length : 0;
+            
+            let representativeSymbol = day.daySymbol;
+            if (!representativeSymbol) {
+                representativeSymbol = Object.keys(day.symbols).reduce((a, b) => day.symbols[a] > day.symbols[b] ? a : b, '');
+            }
+            
+            const symbolCode = representativeSymbol.split('_')[0];
+    
+            return {
+                date,
+                dayName: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+                minTemp: Math.round(minTemp),
+                maxTemp: Math.round(maxTemp),
+                totalPrecipitation,
+                symbol: weatherSymbolTranslations[symbolCode] || symbolCode,
+                avgWind: avgWind.toFixed(1)
+            };
+        }).filter(Boolean);
+    
+        return processedForecasts;
+    };
+
+    const renderWeatherPage = async () => {
+        renderHeader('Været for Oslo');
+        contentElement.innerHTML = 'Laster værdata...';
+        
+        try {
+            const lat = 59.9139;
+            const lon = 10.7522;
+            const url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`;
+            
+            const response = await fetch(url, {
+                headers: { 'User-Agent': 'teksttv.veldigsnill.no/1.0 https://github.com/trygve/tekst-tv' }
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            const forecasts = processWeatherData(data).slice(0, 3);
+            
+            let html = '<div class="weather-forecasts">';
+
+            forecasts.forEach(day => {
+                html += `
+                    <div class="weather-day">
+                        <div class="weather-day-name">${day.dayName}</div>
+                        <div class="weather-detail">
+                            <span class="weather-label">Vær</span>
+                            <span class="weather-value weather-symbol">${day.symbol}</span>
+                        </div>
+                        <div class="weather-detail">
+                            <span class="weather-label">Temp.</span>
+                            <span class="weather-value">${day.maxTemp}° / ${day.minTemp}°</span>
+                        </div>
+                        <div class="weather-detail">
+                            <span class="weather-label">Nedbør</span>
+                            <span class="weather-value">${day.totalPrecipitation.toFixed(1)} mm</span>
+                        </div>
+                        <div class="weather-detail">
+                            <span class="weather-label">Vind</span>
+                            <span class="weather-value">${day.avgWind} m/s</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            html += `<div class="external-link-container"><a href="https://www.yr.no/nb" target="_blank">Se detaljert varsel på Yr.no</a></div>`;
+            html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
+            contentElement.innerHTML = html;
+    
+        } catch (error) {
+            console.error("Kunne ikke laste værdata:", error);
+            contentElement.innerHTML = `Feil ved lasting av værdata. Sjekk konsollen for detaljer.`;
+        }
+    };
+
     const renderColophonPage = () => {
         renderHeader(`Side 800`);
 
@@ -257,6 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const page = parseInt(hash.substring(1));
             if (page === 800) {
                 renderColophonPage();
+            } else if (page === 200) {
+                renderWeatherPage();
             } else if (!isNaN(page) && page > 100) {
                 renderArticlePage(page);
             } else {

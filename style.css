@@ -231,6 +231,42 @@ a:hover {
     text-align: left;
 }
 
+.weather-forecasts {
+    padding-bottom: 2rem;
+}
+
+.weather-day {
+    margin-bottom: 1.5rem;
+}
+
+.weather-day-name {
+    font-size: 1.2rem;
+    color: var(--time-color);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--dots-color);
+    margin-bottom: 0.5rem;
+}
+
+.weather-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+}
+
+.weather-label {
+    color: var(--link-color);
+}
+
+.weather-value {
+    text-align: right;
+}
+
+.weather-symbol {
+    font-family: 'Teletext50-Condensed';
+    font-size: 1.2rem;
+}
+
 .pagination-controls {
     display: flex;
     justify-content: space-between;
@@ -276,5 +312,22 @@ a:hover {
         height: 100dvh;
         border: none;
         font-size: 1rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .weather-forecasts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    .weather-day {
+        margin-bottom: 0;
+    }
+    .weather-forecasts .weather-day:nth-child(n+2) .weather-label {
+        display: none;
+    }
+    .weather-forecasts .weather-day:nth-child(n+2) .weather-detail {
+        justify-content: flex-end;
     }
 }
