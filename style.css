@@ -218,6 +218,7 @@ a:hover {
 
 .colophon-navigation {
     text-align: center;
+    font-size: 0.875rem;
 }
 
 .autoupdate-footer {
@@ -227,8 +228,8 @@ a:hover {
 }
 
 .external-link-container {
-    margin-top: 1.5rem;
     text-align: left;
+    margin-bottom: 1.5rem;
 }
 
 .weather-forecasts {

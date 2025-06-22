@@ -392,8 +392,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             html += '</div>';
-
+            
             html += `<div class="external-link-container"><a href="https://www.yr.no/nb" target="_blank">Se detaljert varsel på Yr.no</a></div>`;
+            html += `<div class="colophon-navigation"><a href="#">Tilbake til forsiden (100)</a></div>`;
             html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
             contentElement.innerHTML = html;
     
