@@ -1,0 +1,210 @@
+@font-face {
+    font-family: 'Teletext50';
+    src: url('assets/fonts/Teletext50.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Teletext50-UltraCondensed';
+    src: url('assets/fonts/Teletext50-ultracondensed.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Teletext50-Condensed';
+    src: url('assets/fonts/Teletext50-condensed.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Teletext50-SemiCondensed';
+    src: url('assets/fonts/Teletext50-semicondensed.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Teletext50-ExtraCondensed';
+    src: url('assets/fonts/Teletext50-extracondensed.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Teletext50-Extended';
+    src: url('assets/fonts/Teletext50-extended.otf') format('opentype');
+}
+
+:root {
+    --background-color: #111;
+    --text-color: #eee;
+    --link-color: #0ee;
+    --link-hover-background: #0ee;
+    --link-hover-text: #111;
+    --time-color: #ee0;
+    --border-color: #444;
+    --dots-color: #888;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Teletext50', 'Courier New', Courier, monospace;
+    display: flex;
+    padding-top: 6rem;
+    height: 100vh;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+}
+
+#teletext-container {
+    max-width: 50rem;
+    background-color: var(--background-color);
+    box-sizing: border-box;
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    image-rendering: pixelated;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    background-color: var(--link-hover-background);
+    color: var(--link-hover-text);
+}
+
+.article-title {
+    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
+    font-size: 3rem;
+    display: block;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+
+.article-description {
+    font-family: 'Teletext50-SemiCondensed', 'Courier New', Courier, monospace;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.article-paragraph {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.published-info {
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.time {
+    color: var(--time-color);
+}
+
+#teletext-header {
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+}
+
+.feed-selector {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.feed-item {
+    color: var(--text-color);
+    text-decoration: none;
+    opacity: 0.6;
+}
+
+.feed-item:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+    opacity: 1;
+}
+
+.active-feed {
+    color: var(--time-color);
+    opacity: 1;
+    cursor: default;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.front-page-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    position: relative;
+    overflow: hidden;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+
+.front-page-link:hover {
+    background-color: var(--background-color);
+}
+
+.front-page-link:hover .front-page-title,
+.front-page-link:hover .front-page-page {
+    background-color: var(--link-hover-background);
+    color: var(--link-hover-text);
+}
+
+.front-page-link::after {
+    content: '................................................................................';
+    position: absolute;
+    left: 0;
+    bottom: 3px;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+    color: var(--dots-color);
+    z-index: -1;
+}
+
+.front-page-title, .front-page-page {
+    background-color: var(--background-color);
+    padding: 0;
+}
+
+.front-page-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    padding-right: 0.5ch;
+}
+
+.article-navigation {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.article-navigation a {
+    font-size: 0.875rem;
+}
+
+.article-navigation a:nth-child(2) {
+    text-align: center;
+}
+
+.article-navigation a:last-child {
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    #teletext-container {
+        width: 100%;
+        height: 100dvh;
+        border: none;
+        font-size: 1rem;
+    }
+}
