@@ -1,15 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const headerElement = document.getElementById('teletext-header');
     const contentElement = document.getElementById('content');
+    const proxyUrl = '';
     
     const feeds = [
-        { name: 'Norge', url: 'https://www.nrk.no/nyheter/siste.rss' },
+        { name: 'NRK Nyheter', url: 'https://www.nrk.no/nyheter/siste.rss' },
         { name: 'Stor-Oslo', url: 'https://www.nrk.no/stor-oslo/siste.rss' }
     ];
     let currentFeedIndex = 0;
-
-    // Using a CORS proxy to fetch the RSS feed
-    const proxyUrl = 'https://corsproxy.io/?';
 
     let articles = [];
     let lastUpdated = null;
@@ -133,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isSilent) {
                 contentElement.innerHTML = 'Laster nyheter...';
             }
-            const response = await fetch(proxyUrl + encodeURIComponent(feeds[currentFeedIndex].url));
+            const response = await fetch(feeds[currentFeedIndex].url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -169,7 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
             timeString = lastUpdated.toLocaleString('no-NO');
         }
         const timeHtml = `<span class="header-time">${timeString}</span>`;
-        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}</span><span class="site-title-header">NRK NYHETER</span>${timeHtml}</div>`;
+        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}</span><span class="site-title-header" id="teksttv-title" style="cursor:pointer;text-decoration:none;color:inherit">«Tekst-TV»</span>${timeHtml}</div>`;
+        const teksttvTitle = document.getElementById('teksttv-title');
+        if (teksttvTitle) {
+            teksttvTitle.onclick = () => { window.location.hash = ''; };
+        }
     };
 
     const renderFrontPage = () => {
@@ -180,17 +182,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderHeader(`Side 100 (${frontPage + 1}/${totalPages})`);
 
+        let html = `<div class=\"frontpage-title\">«Tekst-TV»</div>`;
+
         let feedSelectorHtml = `<div class="feed-selector">`;
         feeds.forEach((feed, index) => {
             if (index === currentFeedIndex) {
                 feedSelectorHtml += `<span class="feed-item active-feed">${feed.name}</span>`;
             } else {
-                feedSelectorHtml += `<a href="#" class="feed-item" data-feed-index="${index}">${feed.name}</a>`;
+                feedSelectorHtml += `<a href=\"#\" class=\"feed-item\" data-feed-index=\"${index}\">${feed.name}</a>`;
             }
         });
         feedSelectorHtml += `</div>\n`;
 
-        let html = feedSelectorHtml;
+        html += feedSelectorHtml;
         pageArticles.forEach(article => {
             html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${article.title}</span><span class="front-page-dots"></span><span class="front-page-page">${article.page}</span></a>\n`;
         });
@@ -217,11 +221,21 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-dots"></span><span class="front-page-page">800</span></a>
         <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-dots"></span><span class="front-page-page">200</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-dots"></span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
+        <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-dots"></span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
 </div>
 `;
         
         contentElement.innerHTML = html;
+
+        // Koble opp tema-bytte-knappen
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.onclick = () => {
+                document.body.classList.toggle('light-theme');
+                themeToggle.querySelector('.front-page-page').textContent = document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk';
+            };
+        }
     };
 
     const renderArticlePage = (page) => {
@@ -242,16 +256,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let html = '<div class="article-navigation">';
 
+        // Alltid tre kolonner: Forrige | Forsiden | Neste
         if (prevArticle) {
-            html += `<a href="#${prevArticle.page}"><- Forrige</a>`;
+            html += `<a href=\"#${prevArticle.page}\"><- Forrige</a>`;
+        } else {
+            html += '<span></span>';
         }
 
-        html += `<a href="#">Tilbake til forsiden (100)</a>`;
+        html += `<a href=\"#\">Forsiden (100)</a>`;
 
         if (nextArticle) {
-            html += `<a href="#${nextArticle.page}">Neste -></a>`;
+            html += `<a href=\"#${nextArticle.page}\">Neste -></a>`;
+        } else {
+            html += '<span></span>';
         }
-        
         html += '</div>';
 
         const descriptionHtml = article.description
@@ -347,26 +365,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderWeatherPage = async () => {
         renderHeader('Været for Oslo');
-        contentElement.innerHTML = 'Laster værdata...';
+        contentElement.innerHTML = '<div class="frontpage-title">Været for Oslo</div>Laster værdata...';
         
         try {
             const lat = 59.9139;
             const lon = 10.7522;
-            const url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`;
-            
-            const response = await fetch(url, {
-                headers: { 'User-Agent': 'teksttv.veldigsnill.no/1.0 https://github.com/trygve/tekst-tv' }
-            });
-    
+            const url = `https://tekstv-proxy.trygve-bernhardt.workers.dev/?lat=${lat}&lon=${lon}`;
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-    
             const data = await response.json();
             const forecasts = processWeatherData(data).slice(0, 3);
-            
-            let html = '<div class="weather-forecasts">';
-
+            let html = '<div class="frontpage-title">Været for Oslo</div>';
+            html += '<div class="weather-forecasts">';
             forecasts.forEach(day => {
                 html += `
                     <div class="weather-day">
@@ -390,17 +402,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             });
-
             html += '</div>';
-            
             html += `<div class="external-link-container"><a href="https://www.yr.no/nb" target="_blank">Se detaljert varsel på Yr.no</a></div>`;
             html += `<div class="colophon-navigation"><a href="#">Tilbake til forsiden (100)</a></div>`;
             html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
             contentElement.innerHTML = html;
-    
         } catch (error) {
             console.error("Kunne ikke laste værdata:", error);
-            contentElement.innerHTML = `Feil ved lasting av værdata. Sjekk konsollen for detaljer.`;
+            contentElement.innerHTML = `<div class=\"frontpage-title\">Været for Oslo</div>Feil ved lasting av værdata.<br><span style='font-size:0.9em'>${error.message}</span><br>Prøv å laste siden på nytt, eller besøk <a href='https://www.yr.no/nb' target='_blank'>Yr.no</a> direkte.`;
         }
     };
 
@@ -458,4 +467,15 @@ document.addEventListener('DOMContentLoaded', () => {
             startAutoUpdate();
         }
     });
+
+    // Tema-bytte
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.onclick = () => {
+            document.body.classList.toggle('light-theme');
+            themeToggle.textContent = document.body.classList.contains('light-theme') ? 'Mørkt tema' : 'Lyst tema';
+        };
+        // Sett riktig tekst ved lasting
+        themeToggle.textContent = document.body.classList.contains('light-theme') ? 'Mørkt tema' : 'Lyst tema';
+    }
 });

@@ -40,6 +40,18 @@
     --section-background: #0000cd;
 }
 
+body.light-theme {
+    --background-color: #f7f7f7;
+    --text-color: #222;
+    --link-color: #0055cc;
+    --link-hover-background: #e0eaff;
+    --link-hover-text: #0055cc;
+    --time-color: #0055cc;
+    --border-color: #bbb;
+    --dots-color: #ccc;
+    --section-background: #b3d1ff;
+}
+
 body {
     background-color: var(--background-color);
     color: var(--text-color);
@@ -57,7 +69,7 @@ body {
     font-size: 1.25rem;
     line-height: 1.2;
     image-rendering: pixelated;
-    margin: 6rem auto;
+    margin: 2rem auto;
 }
 
 a {
@@ -176,12 +188,23 @@ a:hover {
     z-index: -1;
 }
 
-.front-page-title, .front-page-page {
-    background-color: var(--background-color);
-    padding: 0;
+.frontpage-title {
+    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.03em;
+    line-height: 1.1;
 }
 
 .front-page-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    padding-right: 0.5ch;
+}
+
+.front-page-page {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -332,4 +355,39 @@ a:hover {
     .weather-forecasts .weather-day:nth-child(n+2) .weather-detail {
         justify-content: flex-end;
     }
+}
+
+#teksttv-title:hover {
+    color: #fff;
+    background: var(--section-background);
+    transition: background 0.15s, color 0.15s;
+}
+
+#teksttv-title {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.article-navigation a,
+.article-navigation span,
+.autoupdate-footer a,
+.colophon-navigation a {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+#theme-toggle {
+    color: var(--link-color);
+    background: none;
+    border: none;
+}
+
+.front-page-link#theme-toggle span {
+    color: var(--link-color);
+}
+
+#theme-toggle:hover,
+.front-page-link#theme-toggle:hover span {
+    color: var(--link-hover-text);
+    background: var(--link-hover-background);
 }
