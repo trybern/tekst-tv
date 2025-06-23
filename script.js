@@ -222,8 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="index-section">
     <div class="index-header">Oversikt</div>
     <div class="index-links">
-        <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
-        <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">200</span></a>
+    <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">200</span></a>
+    <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
+    <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
         <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
@@ -454,6 +455,77 @@ document.addEventListener('DOMContentLoaded', () => {
         contentElement.innerHTML = html;
     };
 
+    const renderLottoPage = async () => {
+        renderHeader('Side 700');
+        contentElement.innerHTML = '<div class="frontpage-title">Lotto</div>Laster resultater...';
+        try {
+            const response = await fetch('https://lotto.trygve-bernhardt.workers.dev/');
+            console.log('Lotto response status:', response.status);
+            console.log('Lotto response headers:', response.headers);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.text();
+            console.log('Lotto raw response:', data);
+            
+            const lottoData = JSON.parse(data);
+            console.log('Lotto parsed data:', lottoData);
+            
+            let html = '<div class="frontpage-title">Lotto</div>';
+            
+            if (lottoData.success && lottoData.mainNumbers && lottoData.mainNumbers.length > 0) {
+                // Formater dato hvis tilgjengelig
+                if (lottoData.date) {
+                    const date = new Date(lottoData.date);
+                    const formattedDate = date.toLocaleDateString('nb-NO', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    html += `<div class="lotto-date">${formattedDate}</div>`;
+                }
+                
+                // Vis hovedtallene
+                html += '<div class="lotto-section">Tall:</div>';
+                html += '<div class="lotto-numbers">';
+                lottoData.mainNumbers.forEach(number => {
+                    html += `<span class="lotto-number">${number}</span>`;
+                });
+                html += '</div>';
+                
+                // Vis tilleggstallet hvis tilgjengelig
+                if (lottoData.extraNumber) {
+                    html += '<div class="lotto-section">Tilleggstall:</div>';
+                    html += '<div class="lotto-numbers">';
+                    html += `<span class="lotto-number extra">${lottoData.extraNumber}</span>`;
+                    html += '</div>';
+                    
+                    // Lenke til Norsk Tipping direkte under tilleggstallet
+                    html += '<div class="lotto-external-link">';
+                    html += '<a href="https://www.norsk-tipping.no/lotteri/lotto/resultater" target="_blank">Se hos Norsk Tipping</a>';
+                    html += '</div>';
+                }
+                
+                // Kolofon-lenke til forsiden
+                html += '<div class="colophon-navigation">';
+                html += '<a href="#" onclick="showPage(100)">Forsiden (100)</a>';
+                html += '</div>';
+            } else {
+                html += '<div class="error-message">Kunne ikke hente Lotto-resultater</div>';
+            }
+            
+            contentElement.innerHTML = html;
+            contentElement.className = 'lotto-page';
+        } catch (error) {
+            console.error('Error fetching lotto data:', error);
+            contentElement.innerHTML = '<div class="frontpage-title">Lotto</div><div class="error-message">Feil ved henting av resultater</div>';
+            contentElement.className = 'lotto-page';
+        }
+    };
+
     const render = () => {
         const hash = window.location.hash;
 
@@ -463,6 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderColophonPage();
             } else if (page === 200) {
                 renderWeatherPage();
+            } else if (page === 700) {
+                renderLottoPage();
             } else if (!isNaN(page) && page > 100) {
                 renderArticlePage(page);
             } else {

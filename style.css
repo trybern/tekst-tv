@@ -38,6 +38,11 @@
     --border-color: #444;
     --dots-color: #888;
     --section-background: #0000cd;
+    --lotto-main-bg: #cc0000;
+    --lotto-main-text: #ffffff;
+    --lotto-extra-bg: #ffc9ce;
+    --lotto-extra-text: #261440;
+    --error-color: #ff0000;
 }
 
 body.light-theme {
@@ -50,6 +55,11 @@ body.light-theme {
     --border-color: #bbb;
     --dots-color: #ccc;
     --section-background: #b3d1ff;
+    --lotto-main-bg: #cc0000;
+    --lotto-main-text: #ffffff;
+    --lotto-extra-bg: #ffc9ce;
+    --lotto-extra-text: #261440;
+    --error-color: #ff0000;
 }
 
 body {
@@ -407,4 +417,129 @@ a:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
+}
+
+/* Lotto styling */
+.lotto-date {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--time-color);
+}
+
+.lotto-section {
+    text-align: center;
+    font-size: 1.1rem;
+    margin: 1rem 0 0.5rem 0;
+    color: var(--text-color);
+}
+
+.lotto-numbers {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.lotto-number {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    text-align: center;
+    background-color: var(--lotto-main-bg);
+    color: var(--lotto-main-text);
+    font-weight: bold;
+    margin: 0 0.2rem;
+    border-radius: 50%;
+    font-size: 1.1rem;
+}
+
+.lotto-number.extra {
+    background-color: var(--lotto-extra-bg);
+    color: var(--lotto-extra-text);
+}
+
+.error-message {
+    text-align: center;
+    color: var(--error-color);
+    margin: 1rem 0;
+}
+
+/* Lotto navigation */
+.lotto-navigation {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.lotto-navigation a {
+    color: var(--time-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.lotto-navigation a:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+    padding: 0.2rem 0.5rem;
+}
+
+.lotto-navigation .separator {
+    color: var(--text-color);
+    margin: 0 0.5rem;
+}
+
+/* Lotto external link */
+.lotto-external-link {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.lotto-external-link a {
+    color: var(--time-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.lotto-external-link a:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+    padding: 0.2rem 0.5rem;
+}
+
+/* Center Lotto title */
+.lotto-page .frontpage-title {
+    text-align: center;
+}
+
+/* Light theme overrides for Lotto */
+.light-theme .lotto-date {
+    color: var(--text-color);
+}
+
+.light-theme .lotto-section {
+    color: var(--text-color);
+}
+
+.light-theme .lotto-number {
+    background-color: var(--lotto-main-bg);
+    color: var(--lotto-main-text);
+}
+
+.light-theme .lotto-number.extra {
+    background-color: var(--lotto-extra-bg);
+    color: var(--lotto-extra-text);
+}
+
+.light-theme .lotto-external-link a {
+    color: var(--link-color);
+}
+
+.light-theme .lotto-external-link a:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+}
+
+.light-theme .error-message {
+    color: var(--error-color);
 }
