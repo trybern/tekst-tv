@@ -195,8 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
         feedSelectorHtml += `</div>\n`;
 
         html += feedSelectorHtml;
-        pageArticles.forEach(article => {
-            html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${article.title}</span><span class="front-page-dots"></span><span class="front-page-page">${article.page}</span></a>\n`;
+        pageArticles.forEach((article, idx) => {
+            if (frontPage === 0 && idx === 0) {
+                html += `<a href="#${article.page}" class="front-page-link front-page-lead"><span class="front-page-title front-page-lead-title">${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
+            } else {
+                html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
+            }
         });
 
         html += `\n`;
@@ -218,10 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="index-section">
     <div class="index-header">Oversikt</div>
     <div class="index-links">
-        <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-dots"></span><span class="front-page-page">800</span></a>
-        <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-dots"></span><span class="front-page-page">200</span></a>
-        <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-dots"></span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
-        <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-dots"></span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
+        <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
+        <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">200</span></a>
+        <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
+        <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
 </div>
 `;

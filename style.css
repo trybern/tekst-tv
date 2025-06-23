@@ -67,7 +67,7 @@ body {
     box-sizing: border-box;
     padding: 1.5rem;
     font-size: 1.25rem;
-    line-height: 1.2;
+    line-height: 1.3;
     image-rendering: pixelated;
     margin: 2rem auto;
 }
@@ -87,7 +87,7 @@ a:hover {
     font-size: 3rem;
     letter-spacing: 0.0125em;
     display: block;
-    line-height: 1.1;
+    line-height: 1;
     margin-bottom: 0.5rem;
 }
 
@@ -155,14 +155,17 @@ a:hover {
     text-align: right;
 }
 
-.front-page-link {
+.front-page-link,
+.front-page-lead {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     position: relative;
     overflow: hidden;
     line-height: 1.1;
     margin-bottom: 0.5rem;
+    align-content: center;
+    min-height: 2rem;
 }
 
 .front-page-link:hover {
@@ -173,19 +176,6 @@ a:hover {
 .front-page-link:hover .front-page-page {
     background-color: var(--link-hover-background);
     color: var(--link-hover-text);
-}
-
-.front-page-link::after {
-    content: '................................................................................';
-    position: absolute;
-    left: 0;
-    bottom: 3px;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: clip;
-    white-space: nowrap;
-    color: var(--dots-color);
-    z-index: -1;
 }
 
 .frontpage-title {
@@ -202,6 +192,8 @@ a:hover {
     text-overflow: ellipsis;
     position: relative;
     padding-right: 0.5ch;
+    min-height: 1.5rem;
+    align-content: center;
 }
 
 .front-page-page {
@@ -348,6 +340,9 @@ a:hover {
         border: none;
         font-size: 1rem;
     }
+    .index-links {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (min-width: 769px) {
@@ -399,4 +394,17 @@ a:hover {
 .front-page-link#theme-toggle:hover span {
     color: var(--link-hover-text);
     background: var(--link-hover-background);
+}
+
+
+.front-page-lead-title {
+    font-size: 1.5em;
+    font-family: 'Teletext50-SemiCondensed', 'Courier New', Courier, monospace;
+    line-height: 1.1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
 }
