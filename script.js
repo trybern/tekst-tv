@@ -222,9 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="index-section">
     <div class="index-header">Oversikt</div>
     <div class="index-links">
-    <a href="#200" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">200</span></a>
-    <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
-    <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
+        <a href="#300" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">300</span></a>
+        <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
+        <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
         <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
@@ -526,14 +526,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    function setMeta(page) {
+        let title = '"Tekst-TV" på nett – Siste nytt fra NRK';
+        let desc = 'En moderne hyllest til Tekst-TV. Få de siste nyhetene fra NRK og sjekk været, presentert med den klassiske pikselerte estetikken.';
+
+        if (page === 300) {
+            title = '"Tekst-TV Vær" – Sjekk været for Oslo i klassisk Tekst-TV-stil';
+            desc = 'Sjekk oppdatert værvarsel for Oslo, presentert med den klassiske Tekst-TV-estetikken. Data fra MET Norway.';
+        } else if (page === 700) {
+            title = '"Tekst-TV Lotto" – Siste Lottoresultater i Tekst-TV-format';
+            desc = 'Se de nyeste Lotto-tallene fra Norsk Tipping, presentert i ekte Tekst-TV-stil.';
+        } else if (page === 800) {
+            title = 'Om "Tekst-TV" på nett – Info om prosjektet';
+            desc = 'Les mer om Tekst-TV på nett, prosjektets bakgrunn og tekniske detaljer.';
+        }
+
+        document.title = title;
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', desc);
+        }
+    }
+
     const render = () => {
         const hash = window.location.hash;
+        let page = 100;
+        if (hash) {
+            page = parseInt(hash.substring(1));
+        }
+        setMeta(page);
 
         if (hash) {
-            const page = parseInt(hash.substring(1));
             if (page === 800) {
                 renderColophonPage();
-            } else if (page === 200) {
+            } else if (page === 300) {
                 renderWeatherPage();
             } else if (page === 700) {
                 renderLottoPage();
