@@ -212,6 +212,14 @@ a:hover {
     padding-right: 0.5ch;
 }
 
+.frontpage-title-404 {
+    font-size: 6rem;
+    text-align: center;
+    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
+    letter-spacing: 0.03em;
+    line-height: 1.1;
+}
+
 .article-navigation {
     margin-top: 1rem;
     display: grid;
@@ -360,7 +368,6 @@ a:hover {
 #teksttv-title:hover {
     color: #fff;
     background: var(--section-background);
-    transition: background 0.15s, color 0.15s;
 }
 
 #teksttv-title {

@@ -241,7 +241,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderArticlePage = (page) => {
         const articleIndex = articles.findIndex(a => a.page === page);
         if (articleIndex === -1) {
-            window.location.hash = '';
+            // 404-side
+            renderHeader(`Side ${page}`);
+            contentElement.innerHTML = `
+                <div class="frontpage-title-404">404</div>
+                <div style="text-align:center;font-size:1.5rem;margin-bottom:1.5rem;">Siden finnes ikke</div>
+                <div class="colophon-navigation"><a href="#">Forsiden (100)</a></div>
+            `;
+            const titleEl = document.querySelector('.frontpage-title-404');
+            if (titleEl) {
+                titleEl.style.fontFamily = `'Teletext50-UltraCondensed', 'Courier New', Courier, monospace`;
+            }
             return;
         }
         const article = articles[articleIndex];
