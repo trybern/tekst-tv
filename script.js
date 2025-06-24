@@ -62,6 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         lightssnowshowersandthunder: "Lette snøbyger og torden",
     };
 
+    const sportFeed = { name: 'NRK Sport', url: 'https://www.nrk.no/sport/toppsaker.rss' };
+    let sportArticles = [];
+    let sportPage = 0;
+    const sportArticlesPerPage = 10;
+
     contentElement.addEventListener('click', (e) => {
         const link = e.target.closest('a');
         if (!link) return;
@@ -107,6 +112,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+
+        if (link.hash === '#sport-next') {
+            e.preventDefault();
+            sportPage++;
+            renderSportPage();
+            return;
+        }
+        if (link.hash === '#sport-prev') {
+            e.preventDefault();
+            sportPage--;
+            renderSportPage();
+            return;
+        }
     });
 
     const stopAutoUpdate = () => {
@@ -126,30 +144,35 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Auto-oppdatering startet (hvert 5. minutt).');
     };
 
+    // Felles funksjon for å hente og parse RSS-feed
+    async function fetchRssFeed(url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const str = await response.text();
+        const data = new window.DOMParser().parseFromString(str, "text/xml");
+        return data.querySelectorAll("item");
+    }
+
+    // Felles funksjon for å mappe RSS-items til artikkel-objekter
+    function parseRssItems(items, pageStart = 101) {
+        return Array.from(items).map((item, index) => ({
+            id: index,
+            page: pageStart + index,
+            title: item.querySelector("title").textContent,
+            description: item.querySelector("description").textContent,
+            link: item.querySelector("link").textContent,
+            pubDate: item.querySelector("pubDate").textContent,
+            category: item.querySelector("category")?.textContent || '',
+        }));
+    }
+
     const fetchNews = async (isSilent = false) => {
         try {
             if (!isSilent) {
                 contentElement.innerHTML = 'Laster nyheter...';
             }
-            const response = await fetch(feeds[currentFeedIndex].url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const str = await response.text();
-            const data = new window.DOMParser().parseFromString(str, "text/xml");
-            const items = data.querySelectorAll("item");
-            
-            articles = Array.from(items).map((item, index) => {
-                return {
-                    id: index,
-                    page: 101 + index,
-                    title: item.querySelector("title").textContent,
-                    description: item.querySelector("description").textContent,
-                    link: item.querySelector("link").textContent,
-                    pubDate: item.querySelector("pubDate").textContent,
-                    category: item.querySelector("category")?.textContent || '',
-                };
-            });
+            const items = await fetchRssFeed(feeds[currentFeedIndex].url);
+            articles = parseRssItems(items, 101);
             lastUpdated = new Date();
             if (!isSilent) {
                 frontPage = 0; // Reset to first page
@@ -162,11 +185,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderHeader = (pageTitle) => {
-        let timeString = '';
-        if (lastUpdated) {
-            timeString = lastUpdated.toLocaleString('no-NO');
-        }
-        const timeHtml = `<span class="header-time">${timeString}</span>`;
+        // Norsk ukedagsforkortelse
+        const weekdayShort = ['Sø.', 'Ma.', 'Ti.', 'On.', 'To.', 'Fr.', 'Lø.'];
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = String(now.getFullYear()).slice(-2);
+        const dateString = `${weekdayShort[now.getDay()]} ${day}.${month}.${year}`;
+        const timeHtml = `<span class="header-time">${dateString}</span>`;
         headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}</span><span class="site-title-header" id="teksttv-title" style="cursor:pointer;text-decoration:none;color:inherit">«Tekst-TV»</span>${timeHtml}</div>`;
         const teksttvTitle = document.getElementById('teksttv-title');
         if (teksttvTitle) {
@@ -175,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderFrontPage = () => {
+        contentElement.className = '';
         const totalPages = Math.ceil(articles.length / articlesPerPage);
         const start = frontPage * articlesPerPage;
         const end = start + articlesPerPage;
@@ -225,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="#300" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">300</span></a>
         <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
         <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
+        <a href="#200" class="front-page-link"><span class="front-page-title">Sport</span><span class="front-page-page">200</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
         <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
@@ -244,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderArticlePage = (page) => {
+        contentElement.className = '';
         const articleIndex = articles.findIndex(a => a.page === page);
         if (articleIndex === -1) {
             // 404-side
@@ -379,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderWeatherPage = async () => {
+        contentElement.className = '';
         renderHeader('Været for Oslo');
         contentElement.innerHTML = '<div class="frontpage-title">Været for Oslo</div>Laster værdata...';
         
@@ -429,6 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderColophonPage = () => {
+        contentElement.className = '';
         renderHeader(`Side 800`);
 
         const html = `
@@ -526,6 +557,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    async function fetchSport() {
+        try {
+            const items = await fetchRssFeed(sportFeed.url);
+            sportArticles = parseRssItems(items, 201);
+        } catch (error) {
+            console.error("Kunne ikke laste sportssaker:", error);
+            sportArticles = [];
+        }
+    }
+
+    function renderSportPage() {
+        contentElement.className = '';
+        renderHeader('Sport 200');
+        const totalPages = Math.ceil(sportArticles.length / sportArticlesPerPage);
+        const start = sportPage * sportArticlesPerPage;
+        const end = start + sportArticlesPerPage;
+        const pageArticles = sportArticles.slice(start, end);
+
+        let html = `<div class="frontpage-title">Sport</div>`;
+        if (pageArticles.length === 0) {
+            html += '<div>Laster sportssaker...</div>';
+        } else {
+            pageArticles.forEach((article, idx) => {
+                if (sportPage === 0 && idx === 0) {
+                    html += `<a href="#${article.page}" class="front-page-link front-page-lead"><span class="front-page-title front-page-lead-title">${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
+                } else {
+                    html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
+                }
+            });
+        }
+        html += `<div class="pagination-controls">`;
+        if (sportPage > 0) {
+            html += `<a href="#sport-prev"><- Forrige</a>`;
+        } else {
+            html += `<span></span>`;
+        }
+        if (sportPage < totalPages - 1) {
+            html += `<a href="#sport-next">Neste -></a>`;
+        } else {
+            html += `<span></span>`;
+        }
+        html += `</div>`;
+        html += `<div class="colophon-navigation"><a href="#">Forsiden (100)</a></div>`;
+        contentElement.innerHTML = html;
+    }
+
+    function renderSportArticlePage(page) {
+        contentElement.className = '';
+        const article = sportArticles.find(a => a.page === page);
+        if (!article) {
+            renderHeader(`Side ${page}`);
+            contentElement.innerHTML = `
+                <div class="frontpage-title-404">404</div>
+                <div style="text-align:center;font-size:1.5rem;margin-bottom:1.5rem;">Siden finnes ikke</div>
+                <div class="colophon-navigation"><a href="#">Forsiden (100)</a></div>
+            `;
+            return;
+        }
+        renderHeader(`Side ${article.page}`);
+        const pubDate = new Date(article.pubDate);
+        const time = pubDate.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
+        let html = '<div class="article-navigation">';
+        const idx = sportArticles.findIndex(a => a.page === page);
+        if (idx > 0) {
+            html += `<a href=\"#${sportArticles[idx-1].page}\"><- Forrige</a>`;
+        } else {
+            html += '<span></span>';
+        }
+        html += `<a href=\"#200\">Sport (200)</a>`;
+        if (idx < sportArticles.length - 1) {
+            html += `<a href=\"#${sportArticles[idx+1].page}\">Neste -></a>`;
+        } else {
+            html += '<span></span>';
+        }
+        html += '</div>';
+        const descriptionHtml = article.description
+            .split('\n')
+            .map(p => `<span class="article-paragraph">${p}</span>`)
+            .join('');
+        if(article.category) {
+            html += article.category.toUpperCase();
+        }
+        html += `<span class="article-title">${article.title.toUpperCase()}</span>`;
+        html += `<span class="time">${time}</span> <span class="article-description">${descriptionHtml}</span>`;
+        html += `<span class="published-info">Publisert: ${pubDate.toLocaleString('no-NO')}</span>`;
+        html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK</a></div>`;
+        html += `<div class="colophon-navigation"><a href="#">Forsiden (100)</a> | <a href="#200">Sport (200)</a></div>`;
+        contentElement.innerHTML = html;
+    }
+
     function setMeta(page) {
         let title = '"Tekst-TV" på nett – Siste nytt fra NRK';
         let desc = 'En moderne hyllest til Tekst-TV. Få de siste nyhetene fra NRK og sjekk været, presentert med den klassiske pikselerte estetikken.';
@@ -539,6 +660,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (page === 800) {
             title = 'Om "Tekst-TV" på nett – Info om prosjektet';
             desc = 'Les mer om Tekst-TV på nett, prosjektets bakgrunn og tekniske detaljer.';
+        } else if (page === 200) {
+            title = 'Sport 200 – NRK Sport';
+            desc = 'Sportssaker fra NRK Sport';
         }
 
         document.title = title;
@@ -563,8 +687,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderWeatherPage();
             } else if (page === 700) {
                 renderLottoPage();
+            } else if (page === 200) {
+                sportPage = 0;
+                fetchSport().then(() => renderSportPage());
             } else if (!isNaN(page) && page > 100) {
-                renderArticlePage(page);
+                // Dynamisk grense for sportsartikler
+                if (page >= 201 && page < 201 + sportArticles.length) {
+                    renderSportArticlePage(page);
+                } else {
+                    renderArticlePage(page);
+                }
             } else {
                 frontPage = 0;
                 renderFrontPage();
