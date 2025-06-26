@@ -155,15 +155,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Felles funksjon for å mappe RSS-items til artikkel-objekter
     function parseRssItems(items, pageStart = 101) {
-        return Array.from(items).map((item, index) => ({
-            id: index,
-            page: pageStart + index,
-            title: item.querySelector("title").textContent,
-            description: item.querySelector("description").textContent,
-            link: item.querySelector("link").textContent,
-            pubDate: item.querySelector("pubDate").textContent,
-            category: item.querySelector("category")?.textContent || '',
-        }));
+        return Array.from(items).map((item, index) => {
+            // Sjekk etter <category domain="emphasis">high</category>
+            let emphasis = '';
+            item.querySelectorAll('category').forEach(cat => {
+                if (cat.getAttribute('domain') === 'emphasis' && cat.textContent.toLowerCase() === 'high') {
+                    emphasis = 'high';
+                }
+            });
+            return {
+                id: index,
+                page: pageStart + index,
+                title: item.querySelector("title").textContent,
+                description: item.querySelector("description").textContent,
+                link: item.querySelector("link").textContent,
+                pubDate: item.querySelector("pubDate").textContent,
+                category: item.querySelector("category")?.textContent || '',
+                emphasis,
+            };
+        });
     }
 
     const fetchNews = async (isSilent = false) => {
@@ -207,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const end = start + articlesPerPage;
         const pageArticles = articles.slice(start, end);
 
-        renderHeader(`Side 100 (${frontPage + 1}/${totalPages})`);
+        renderHeader(`100 (${frontPage + 1}/${totalPages})`);
 
         let html = `<div class=\"frontpage-title\">«Tekst-TV»</div>`;
 
@@ -223,10 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         html += feedSelectorHtml;
         pageArticles.forEach((article, idx) => {
+            const emphasisDot = article.emphasis === 'high' ? '<span class="emphasis-dot">•</span>' : '';
             if (frontPage === 0 && idx === 0) {
-                html += `<a href="#${article.page}" class="front-page-link front-page-lead"><span class="front-page-title front-page-lead-title">${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
+                html += `<a href="#${article.page}" class="front-page-link front-page-lead"><span class="front-page-title front-page-lead-title">${emphasisDot}${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
             } else {
-                html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
+                html += `<a href="#${article.page}" class="front-page-link"><span class="front-page-title">${emphasisDot}${article.title}</span><span class="front-page-page">${article.page}</span></a>\n`;
             }
         });
 
@@ -249,10 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="index-section">
     <div class="index-header">Oversikt</div>
     <div class="index-links">
+    <a href="#200" class="front-page-link"><span class="front-page-title">Sport</span><span class="front-page-page">200</span></a>
         <a href="#300" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">300</span></a>
         <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
         <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
-        <a href="#200" class="front-page-link"><span class="front-page-title">Sport</span><span class="front-page-page">200</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
         <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
@@ -276,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const articleIndex = articles.findIndex(a => a.page === page);
         if (articleIndex === -1) {
             // 404-side
-            renderHeader(`Side ${page}`);
+            renderHeader(`${page}`);
             contentElement.innerHTML = `
                 <div class="frontpage-title-404">404</div>
                 <div style="text-align:center;font-size:1.5rem;margin-bottom:1.5rem;">Siden finnes ikke</div>
@@ -290,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const article = articles[articleIndex];
 
-        renderHeader(`Side ${article.page}`);
+        renderHeader(`${article.page}`);
 
         const pubDate = new Date(article.pubDate);
         const time = pubDate.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
@@ -335,83 +346,47 @@ document.addEventListener('DOMContentLoaded', () => {
         contentElement.innerHTML = html;
     };
 
-    const processWeatherData = (data) => {
-        const dailyData = {};
-    
-        data.properties.timeseries.forEach(item => {
-            const date = item.time.split('T')[0];
-            if (!dailyData[date]) {
-                dailyData[date] = {
-                    temperatures: [],
-                    precipitations: [],
-                    symbols: {},
-                    windSpeeds: []
-                };
-            }
-            
-            if (item.data.instant?.details?.air_temperature !== undefined) {
-                dailyData[date].temperatures.push(item.data.instant.details.air_temperature);
-            }
-            if (item.data.instant?.details?.wind_speed !== undefined) {
-                dailyData[date].windSpeeds.push(item.data.instant.details.wind_speed);
-            }
-    
-            if (item.data.next_1_hours?.details?.precipitation_amount !== undefined) {
-                dailyData[date].precipitations.push(item.data.next_1_hours.details.precipitation_amount);
-            }
-    
-            if (item.data.next_1_hours?.summary?.symbol_code) {
-                const symbol = item.data.next_1_hours.summary.symbol_code;
-                const hour = parseInt(item.time.split('T')[1].split(':')[0], 10);
-                if (hour >= 11 && hour <= 14) {
-                     dailyData[date].daySymbol = symbol;
-                }
-                dailyData[date].symbols[symbol] = (dailyData[date].symbols[symbol] || 0) + 1;
+    // Ny funksjon for å splitte og aggregere værdata
+    function splitWeatherData(timeseries) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const todayStr = now.toISOString().split('T')[0];
+
+        // Finn de tre neste timene
+        const nextHours = timeseries.filter(item => {
+            const t = new Date(item.time);
+            return t > now && t.getDate() === now.getDate() && t.getHours() > currentHour;
+        }).slice(0, 3);
+
+        // Resten av dagen (fra etter de tre neste timene til midnatt)
+        let lastHour = now;
+        if (nextHours.length > 0) {
+            lastHour = new Date(nextHours[nextHours.length - 1].time);
+        }
+        const restOfToday = timeseries.filter(item => {
+            const t = new Date(item.time);
+            return t > lastHour && t.getDate() === now.getDate();
+        });
+
+        // De tre neste dagene (oppsummering per dag)
+        const days = {};
+        timeseries.forEach(item => {
+            const t = new Date(item.time);
+            const dateStr = item.time.split('T')[0];
+            if (t > now && dateStr !== todayStr) {
+                if (!days[dateStr]) days[dateStr] = [];
+                days[dateStr].push(item);
             }
         });
-    
-        const processedForecasts = Object.keys(dailyData).map(date => {
-            const day = dailyData[date];
-            const dayDate = new Date(date);
-    
-            const now = new Date();
-            if (dayDate.setHours(0,0,0,0) < now.setHours(0,0,0,0)) {
-                return null;
-            }
-    
-            const dayName = dayDate.toLocaleDateString('no-NO', { weekday: 'long' });
-    
-            const minTemp = Math.min(...day.temperatures);
-            const maxTemp = Math.max(...day.temperatures);
-            const totalPrecipitation = day.precipitations.reduce((a, b) => a + b, 0);
-            const avgWind = day.windSpeeds.length ? day.windSpeeds.reduce((a, b) => a + b, 0) / day.windSpeeds.length : 0;
-            
-            let representativeSymbol = day.daySymbol;
-            if (!representativeSymbol) {
-                representativeSymbol = Object.keys(day.symbols).reduce((a, b) => day.symbols[a] > day.symbols[b] ? a : b, '');
-            }
-            
-            const symbolCode = representativeSymbol.split('_')[0];
-    
-            return {
-                date,
-                dayName: dayName.charAt(0).toUpperCase() + dayName.slice(1),
-                minTemp: Math.round(minTemp),
-                maxTemp: Math.round(maxTemp),
-                totalPrecipitation,
-                symbol: weatherSymbolTranslations[symbolCode] || symbolCode,
-                avgWind: avgWind.toFixed(1)
-            };
-        }).filter(Boolean);
-    
-        return processedForecasts;
-    };
+        const nextThreeDays = Object.keys(days).sort().slice(0, 3).map(dateStr => days[dateStr]);
+
+        return { nextHours, restOfToday, nextThreeDays };
+    }
 
     const renderWeatherPage = async () => {
         contentElement.className = '';
         renderHeader('Været for Oslo');
         contentElement.innerHTML = '<div class="frontpage-title">Været for Oslo</div>Laster værdata...';
-        
         try {
             const lat = 59.9139;
             const lon = 10.7522;
@@ -421,32 +396,109 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            const forecasts = processWeatherData(data).slice(0, 3);
+            const timeseries = data.properties.timeseries;
+            const split = splitWeatherData(timeseries);
             let html = '<div class="frontpage-title">Været for Oslo</div>';
             html += '<div class="weather-forecasts">';
-            forecasts.forEach(day => {
-                html += `
-                    <div class="weather-day">
-                        <div class="weather-day-name">${day.dayName}</div>
-                        <div class="weather-detail">
-                            <span class="weather-label">Vær</span>
-                            <span class="weather-value weather-symbol">${day.symbol}</span>
-                        </div>
-                        <div class="weather-detail">
-                            <span class="weather-label">Temp.</span>
-                            <span class="weather-value">${day.maxTemp}° / ${day.minTemp}°</span>
-                        </div>
-                        <div class="weather-detail">
-                            <span class="weather-label">Nedbør</span>
-                            <span class="weather-value">${day.totalPrecipitation.toFixed(1)} mm</span>
-                        </div>
-                        <div class="weather-detail">
-                            <span class="weather-label">Vind</span>
-                            <span class="weather-value">${day.avgWind} m/s</span>
-                        </div>
-                    </div>
-                `;
+            // Bygg semantisk tabell med tidspunkt/dagnavn som egen rad
+            html += `<table class="weather-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Vær</th>
+                        <th scope="col">Temp.</th>
+                        <th scope="col">Nedbør</th>
+                        <th scope="col">Vind</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            // Samle alle rader i rekkefølge
+            const rows = [];
+            split.nextHours.forEach(item => {
+                const t = new Date(item.time);
+                const hour = t.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
+                const temp = item.data.instant.details.air_temperature;
+                const wind = item.data.instant.details.wind_speed;
+                const symbol = item.data.next_1_hours?.summary?.symbol_code || '';
+                const symbolText = weatherSymbolTranslations[symbol?.split('_')[0]] || symbol;
+                const precip = item.data.next_1_hours?.details?.precipitation_amount ?? 0;
+                rows.push({
+                    label: hour,
+                    symbol: symbolText,
+                    temp: `${Math.round(temp)}°`,
+                    precip: `${precip.toFixed(1)} mm`,
+                    wind: `${wind} m/s`
+                });
             });
+            if (split.restOfToday.length > 0) {
+                let temps = split.restOfToday.map(i => i.data.instant.details.air_temperature);
+                let winds = split.restOfToday.map(i => i.data.instant.details.wind_speed);
+                let precs = split.restOfToday.map(i => i.data.next_1_hours?.details?.precipitation_amount ?? 0);
+                let symbols = {};
+                split.restOfToday.forEach(i => {
+                    const s = i.data.next_1_hours?.summary?.symbol_code;
+                    if (s) symbols[s] = (symbols[s] || 0) + 1;
+                });
+                let mainSymbol = '';
+                let maxCount = 0;
+                for (const [symbol, count] of Object.entries(symbols)) {
+                    if (count > maxCount) {
+                        mainSymbol = symbol;
+                        maxCount = count;
+                    }
+                }
+                let symbolText = weatherSymbolTranslations[mainSymbol?.split('_')[0]] || mainSymbol || '–';
+                rows.push({
+                    label: 'Resten av dagen',
+                    symbol: symbolText,
+                    temp: `${Math.round(Math.max(...temps))}° / ${Math.round(Math.min(...temps))}°`,
+                    precip: `${precs.reduce((a,b)=>a+b,0).toFixed(1)} mm`,
+                    wind: `${(winds.reduce((a,b)=>a+b,0)/winds.length).toFixed(1)} m/s`
+                });
+            }
+            split.nextThreeDays.forEach(dayArr => {
+                if (!dayArr || dayArr.length === 0) return;
+                let temps = dayArr.map(i => i.data.instant.details.air_temperature);
+                let winds = dayArr.map(i => i.data.instant.details.wind_speed);
+                let precs = dayArr.map(i => i.data.next_1_hours?.details?.precipitation_amount ?? 0);
+                let symbols = {};
+                dayArr.forEach(i => {
+                    const s1 = i.data.next_1_hours?.summary?.symbol_code;
+                    const s6 = i.data.next_6_hours?.summary?.symbol_code;
+                    const s12 = i.data.next_12_hours?.summary?.symbol_code;
+                    [s1, s6, s12].forEach(s => {
+                        if (s) symbols[s] = (symbols[s] || 0) + 1;
+                    });
+                });
+                let mainSymbol = '';
+                let maxCount = 0;
+                for (const [symbol, count] of Object.entries(symbols)) {
+                    if (count > maxCount) {
+                        mainSymbol = symbol;
+                        maxCount = count;
+                    }
+                }
+                let symbolText = weatherSymbolTranslations[mainSymbol?.split('_')[0]] || mainSymbol || '–';
+                const t = new Date(dayArr[0].time);
+                const dayName = t.toLocaleDateString('no-NO', { weekday: 'long' });
+                rows.push({
+                    label: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+                    symbol: symbolText,
+                    temp: `${Math.round(Math.max(...temps))}° / ${Math.round(Math.min(...temps))}°`,
+                    precip: `${precs.reduce((a,b)=>a+b,0).toFixed(1)} mm`,
+                    wind: `${(winds.reduce((a,b)=>a+b,0)/winds.length).toFixed(1)} m/s`
+                });
+            });
+            // Render alle rader som to <tr> per værpost
+            rows.forEach(row => {
+                html += `<tr class="weather-time-row"><th scope="row" colspan="5">${row.label}</th></tr>`;
+                html += `<tr>
+                    <td>${row.symbol}</td>
+                    <td>${row.temp}</td>
+                    <td>${row.precip}</td>
+                    <td>${row.wind}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
             html += '</div>';
             html += `<div class="external-link-container"><a href="https://www.yr.no/nb" target="_blank">Se detaljert varsel på Yr.no</a></div>`;
             html += `<div class="colophon-navigation"><a href="#">Tilbake til forsiden (100)</a></div>`;
@@ -460,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderColophonPage = () => {
         contentElement.className = '';
-        renderHeader(`Side 800`);
+        renderHeader(`800`);
 
         const html = `
             <div class="article-colophon">
@@ -487,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderLottoPage = async () => {
-        renderHeader('Side 700');
+        renderHeader('700');
         contentElement.innerHTML = '<div class="frontpage-title">Lotto</div>Laster resultater...';
         try {
             const response = await fetch('https://lotto.trygve-bernhardt.workers.dev/');
@@ -607,7 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contentElement.className = '';
         const article = sportArticles.find(a => a.page === page);
         if (!article) {
-            renderHeader(`Side ${page}`);
+            renderHeader(`${page}`);
             contentElement.innerHTML = `
                 <div class="frontpage-title-404">404</div>
                 <div style="text-align:center;font-size:1.5rem;margin-bottom:1.5rem;">Siden finnes ikke</div>
@@ -615,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             return;
         }
-        renderHeader(`Side ${article.page}`);
+        renderHeader(`${article.page}`);
         const pubDate = new Date(article.pubDate);
         const time = pubDate.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
         let html = '<div class="article-navigation">';
