@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="#${nextPage}" class="header-page-nav-btn" aria-label="gå til side ${nextPage}">&gt;</a>
             `;
         }
-        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}${navHtml ? '<span class=\"header-page-nav\">'+navHtml+'</span>' : ''}</span><span class="site-title-header" id="teksttv-title" style="cursor:pointer;text-decoration:none;color:inherit">«Tekst-TV»</span>${timeHtml}</div>`;
+        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}${navHtml ? '<span class=\"header-page-nav\">'+navHtml+'</span>' : ''}</span><span class="site-title-header teksttv-title-inline" id="teksttv-title">«Tekst-TV»</span>${timeHtml}</div>`;
         const teksttvTitle = document.getElementById('teksttv-title');
         if (teksttvTitle) {
             teksttvTitle.onclick = () => { window.location.hash = ''; };
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
         <a href="#800" class="front-page-link"><span class="front-page-title">Om siden</span><span class="front-page-page">800</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
-        <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
+        <button id="theme-toggle" class="front-page-link theme-toggle-inline"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
 </div>
 `;
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderHeader(`${page}`);
             contentElement.innerHTML = `
                 <div class="frontpage-title-404">404</div>
-                <div style="text-align:center;font-size:1.5rem;margin-bottom:1.5rem;">Siden finnes ikke</div>
+                <div class="notfound-message">Siden finnes ikke</div>
                 <div class="colophon-navigation"><a href="#">Forsiden (100)</a></div>
             `;
             const titleEl = document.querySelector('.frontpage-title-404');
@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contentElement.innerHTML = html;
         } catch (error) {
             console.error("Kunne ikke laste værdata:", error);
-            contentElement.innerHTML = `<div class=\"frontpage-title\">Været for Oslo</div>Feil ved lasting av værdata.<br><span style='font-size:0.9em'>${error.message}</span><br>Prøv å laste siden på nytt, eller besøk <a href='https://www.yr.no/nb' target='_blank'>Yr.no</a> direkte.`;
+            contentElement.innerHTML = `<div class=\"frontpage-title\">Været for Oslo</div>Feil ved lasting av værdata.<br><span class='weather-error-message'>${error.message}</span><br>Prøv å laste siden på nytt, eller besøk <a href='https://www.yr.no/nb' target='_blank'>Yr.no</a> direkte.`;
         }
     };
 
@@ -685,7 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderHeader(`${page}`);
             contentElement.innerHTML = `
                 <div class="frontpage-title-404">404</div>
-                <div style="text-align:center;font-size:1.5rem;margin-bottom:1.5rem;">Siden finnes ikke</div>
+                <div class="notfound-message">Siden finnes ikke</div>
                 <div class="colophon-navigation"><a href="#">Forsiden (100)</a></div>
             `;
             return;

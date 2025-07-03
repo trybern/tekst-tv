@@ -1,3 +1,4 @@
+/* Grunnleggende/typografi/layout */
 @font-face {
     font-family: 'Teletext50';
     src: url('assets/fonts/Teletext50.otf') format('opentype');
@@ -92,40 +93,56 @@ a:hover {
     color: var(--link-hover-text);
 }
 
-.article-title {
-    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
-    font-size: 3rem;
-    letter-spacing: 0.0125em;
-    display: block;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-    text-wrap-style: balance;
+/* Header og navigasjon */
+.header-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
 }
 
-.article-description {
-    font-family: 'Teletext50-SemiCondensed', 'Courier New', Courier, monospace;
-    display: block;
-    margin-bottom: 1rem;
+.site-title-header {
+    text-align: center;
 }
 
-.article-paragraph {
-    display: block;
-    margin-bottom: 0.5rem;
+.header-time {
+    text-align: right;
 }
 
-.published-info {
-    font-size: 0.875rem;
-    display: block;
-    margin-bottom: 1rem;
+.header-page-nav {
+    display: inline-flex;
+    margin-left: 0.5rem;
 }
 
-.time {
-    color: var(--time-color);
+.header-page-nav-btn {
+    display: inline-block;
+    font-size: 1em;
+    font-family: inherit;
+    color: var(--link-color);
+    padding: 0.25rem;
+    text-decoration: none;
+    line-height: 1rem;
+    width: 1rem;
+    text-align: center;
 }
 
-#teletext-header {
-    font-size: 0.875rem;
-    margin-bottom: 20px;
+.header-page-nav-btn:first-child {
+    cursor: w-resize;
+}
+
+.header-page-nav-btn:last-child {
+    cursor: e-resize;
+}
+
+.header-page-nav-btn:hover {
+    background: var(--link-hover-background);
+    color: var(--link-hover-text);
+}
+
+.header-page-nav-current {
+    font-weight: bold;
+    font-size: 1em;
+    color: var(--text-color);
+    margin: 0 0.1em;
 }
 
 .feed-selector {
@@ -153,18 +170,13 @@ a:hover {
     cursor: default;
 }
 
-.header-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-}
-
-.site-title-header {
-    text-align: center;
-}
-
-.header-time {
-    text-align: right;
+/* Forside, nyheter, artikler */
+.frontpage-title {
+    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.03em;
+    line-height: 1.1;
 }
 
 .front-page-link {
@@ -201,14 +213,6 @@ a:hover {
     color: var(--link-hover-text);
 }
 
-.frontpage-title {
-    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    letter-spacing: 0.03em;
-    line-height: 1.1;
-}
-
 .front-page-title {
     position: relative;
     align-content: center;
@@ -229,6 +233,37 @@ a:hover {
     font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
     letter-spacing: 0.03em;
     line-height: 1.1;
+}
+
+.article-title {
+    font-family: 'Teletext50-UltraCondensed', 'Courier New', Courier, monospace;
+    font-size: 3rem;
+    letter-spacing: 0.0125em;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-wrap-style: balance;
+}
+
+.article-description {
+    font-family: 'Teletext50-SemiCondensed', 'Courier New', Courier, monospace;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.article-paragraph {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.published-info {
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.time {
+    color: var(--time-color);
 }
 
 .article-navigation {
@@ -275,6 +310,158 @@ a:hover {
     margin-bottom: 1.5rem;
 }
 
+.index-section {
+    margin-top: 1rem;
+}
+
+.index-header {
+    background-color: var(--section-background);
+    color: var(--text-color);
+    text-align: center;
+    padding: 0.2rem 0;
+    margin-bottom: 0.5rem;
+}
+
+.index-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 2rem;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+}
+
+.pagination-controls > * {
+    flex-basis: 50%;
+}
+
+.pagination-controls > a:last-child,
+.pagination-controls > span:last-child {
+    text-align: right;
+}
+
+.horizontal-rule {
+    color: var(--dots-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.emphasis-dot {
+    color: var(--lotto-main-bg);
+    font-size: 1.5em;
+    margin-right: 0.25em;
+    vertical-align: middle;
+}
+
+/* Lotto/tipping (inkl. ascii-devil) */
+.lotto-date {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--time-color);
+}
+
+.lotto-numbers {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.lotto-number {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    text-align: center;
+    background-color: var(--lotto-main-bg);
+    color: var(--lotto-main-text);
+    font-weight: bold;
+    margin: 0 0.2rem;
+    border-radius: 50%;
+    font-size: 1.1rem;
+}
+
+.lotto-number.extra {
+    background-color: var(--lotto-extra-bg);
+    color: var(--lotto-extra-text);
+}
+
+.lotto-external-link {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.lotto-external-link a {
+    color: var(--time-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.lotto-external-link a:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+    padding: 0.2rem 0.5rem;
+}
+
+.lotto-navigation {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.lotto-navigation a {
+    color: var(--time-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.lotto-navigation a:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+    padding: 0.2rem 0.5rem;
+}
+
+.lotto-navigation .separator {
+    color: var(--text-color);
+    margin: 0 0.5rem;
+}
+
+.lotto-page .frontpage-title {
+    text-align: center;
+}
+
+/* Light theme overrides for Lotto */
+.light-theme .lotto-date {
+    color: var(--text-color);
+}
+
+.light-theme .lotto-number {
+    background-color: var(--lotto-main-bg);
+    color: var(--lotto-main-text);
+}
+
+.light-theme .lotto-number.extra {
+    background-color: var(--lotto-extra-bg);
+    color: var(--lotto-extra-text);
+}
+
+.light-theme .lotto-external-link a {
+    color: var(--link-color);
+}
+
+.light-theme .lotto-external-link a:hover {
+    color: var(--link-hover-text);
+    background-color: var(--link-hover-background);
+}
+
+.light-theme .error-message {
+    color: var(--error-color);
+}
+
+/* Vær */
 .weather-forecasts {
     display: block;
     padding-bottom: 2rem;
@@ -286,7 +473,6 @@ a:hover {
     align-items: center;
     margin: 0;
     padding: 0 0 0.5rem 0;
-
 }
 
 .weather-header {
@@ -313,6 +499,8 @@ a:hover {
 
 .weather-symbol {
     min-width: 6rem;
+    font-family: 'Teletext50-Condensed';
+    font-size: 1.2rem;
 }
 
 .weather-temp, .weather-precip, .weather-wind {
@@ -346,48 +534,68 @@ a:hover {
     text-align: right;
 }
 
-.weather-symbol {
-    font-family: 'Teletext50-Condensed';
-    font-size: 1.2rem;
+.weather-table {
+    width: 100%;
+    margin: 0 auto 2rem auto;
+    border-collapse: collapse;
+    font-size: 1.1rem;
 }
 
-.pagination-controls {
-    display: flex;
-    justify-content: space-between;
-    margin: 1rem 0;
+.weather-table th,
+.weather-table td {
+    padding: 0.3rem 0.7rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.pagination-controls > * {
-    flex-basis: 50%;
-}
-
-.pagination-controls > a:last-child,
-.pagination-controls > span:last-child {
-    text-align: right;
-}
-
-.horizontal-rule {
-    color: var(--dots-color);
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.index-section {
-    margin-top: 1rem;
-}
-
-.index-header {
-    background-color: var(--section-background);
+.weather-table thead th {
+    background: var(--section-background);
     color: var(--text-color);
-    text-align: center;
-    padding: 0.2rem 0;
-    margin-bottom: 0.5rem;
+    font-weight: bold;
+    font-size: 1rem;
+    border: none;
 }
 
-.index-links {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 2rem;
+.weather-time-row th {
+    background: none;
+    color: var(--link-color);
+    font-size: 0.95em;
+    font-weight: bold;
+    padding-top: 1.1em;
+    padding-bottom: 0.2em;
+    border-bottom: none;
+}
+
+.weather-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Diverse/feilmeldinger/utility */
+.theme-toggle-inline {
+    font: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+}
+
+.notfound-message {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.weather-error-message {
+    font-size: 0.9em;
+}
+
+.error-message {
+    text-align: center;
+    color: var(--error-color);
+    margin: 1rem 0;
 }
 
 @media (max-width: 768px) {
@@ -450,205 +658,12 @@ a:hover {
     background: var(--link-hover-background);
 }
 
-
 .front-page-lead-title {
     font-size: 2rem;
     font-family: 'Teletext50-ExtraCondensed', 'Courier New', Courier, monospace;
     line-height: 2.25rem;
     height: unset;
     min-height: 2.5rem;
-}
-
-/* Lotto styling */
-.lotto-date {
-    text-align: center;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    color: var(--time-color);
-}
-
-.lotto-numbers {
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.lotto-number {
-    display: inline-block;
-    width: 2.5rem;
-    height: 2.5rem;
-    line-height: 2.5rem;
-    text-align: center;
-    background-color: var(--lotto-main-bg);
-    color: var(--lotto-main-text);
-    font-weight: bold;
-    margin: 0 0.2rem;
-    border-radius: 50%;
-    font-size: 1.1rem;
-}
-
-.lotto-number.extra {
-    background-color: var(--lotto-extra-bg);
-    color: var(--lotto-extra-text);
-}
-
-.error-message {
-    text-align: center;
-    color: var(--error-color);
-    margin: 1rem 0;
-}
-
-/* Lotto navigation */
-.lotto-navigation {
-    text-align: center;
-    margin-top: 2rem;
-    padding: 1rem 0;
-    border-top: 1px solid var(--border-color);
-}
-
-.lotto-navigation a {
-    color: var(--time-color);
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.lotto-navigation a:hover {
-    color: var(--link-hover-text);
-    background-color: var(--link-hover-background);
-    padding: 0.2rem 0.5rem;
-}
-
-.lotto-navigation .separator {
-    color: var(--text-color);
-    margin: 0 0.5rem;
-}
-
-/* Lotto external link */
-.lotto-external-link {
-    text-align: center;
-    margin: 1rem 0;
-}
-
-.lotto-external-link a {
-    color: var(--time-color);
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.lotto-external-link a:hover {
-    color: var(--link-hover-text);
-    background-color: var(--link-hover-background);
-    padding: 0.2rem 0.5rem;
-}
-
-/* Center Lotto title */
-.lotto-page .frontpage-title {
-    text-align: center;
-}
-
-/* Light theme overrides for Lotto */
-.light-theme .lotto-date {
-    color: var(--text-color);
-}
-
-.light-theme .lotto-number {
-    background-color: var(--lotto-main-bg);
-    color: var(--lotto-main-text);
-}
-
-.light-theme .lotto-number.extra {
-    background-color: var(--lotto-extra-bg);
-    color: var(--lotto-extra-text);
-}
-
-.light-theme .lotto-external-link a {
-    color: var(--link-color);
-}
-
-.light-theme .lotto-external-link a:hover {
-    color: var(--link-hover-text);
-    background-color: var(--link-hover-background);
-}
-
-.light-theme .error-message {
-    color: var(--error-color);
-}
-
-.emphasis-dot {
-    color: var(--lotto-main-bg);
-    font-size: 1.5em;
-    margin-right: 0.25em;
-    vertical-align: middle;
-}
-
-.weather-table {
-    width: 100%;
-    margin: 0 auto 2rem auto;
-    border-collapse: collapse;
-    font-size: 1.1rem;
-}
-.weather-table th,
-.weather-table td {
-    padding: 0.3rem 0.7rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-.weather-table thead th {
-    background: var(--section-background);
-    color: var(--text-color);
-    font-weight: bold;
-    font-size: 1rem;
-    border: none;
-}
-.weather-time-row th {
-    background: none;
-    color: var(--link-color);
-    font-size: 0.95em;
-    font-weight: bold;
-    padding-top: 1.1em;
-    padding-bottom: 0.2em;
-    border-bottom: none;
-}
-.weather-table tr:last-child td {
-    border-bottom: none;
-}
-@media (max-width: 600px) {
-    .weather-table th, .weather-table td { font-size: 0.98em; padding: 0.2em 0.3em; }
-    .weather-table { font-size: 1em; }
-}
-
-.header-page-nav {
-    display: inline-flex;
-    margin-left: 0.5rem;
-}
-.header-page-nav-btn {
-    display: inline-block;
-    font-size: 1em;
-    font-family: inherit;
-    color: var(--link-color);
-    padding: 0.25rem;
-    text-decoration: none;
-    line-height: 1rem;
-    width: 1rem;
-    text-align: center;
-}
-
-.header-page-nav-btn:first-child {
-    cursor: w-resize;
-}
-
-.header-page-nav-btn:last-child {
-    cursor: e-resize;
-}
-
-.header-page-nav-btn:hover {
-    background: var(--link-hover-background);
-    color: var(--link-hover-text);
-}
-.header-page-nav-current {
-    font-weight: bold;
-    font-size: 1em;
-    color: var(--text-color);
-    margin: 0 0.1em;
 }
 
 .ascii-devil {
