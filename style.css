@@ -467,13 +467,6 @@ a:hover {
     color: var(--time-color);
 }
 
-.lotto-section {
-    text-align: center;
-    font-size: 1.1rem;
-    margin: 1rem 0 0.5rem 0;
-    color: var(--text-color);
-}
-
 .lotto-numbers {
     text-align: center;
     margin-bottom: 1rem;
@@ -557,10 +550,6 @@ a:hover {
     color: var(--text-color);
 }
 
-.light-theme .lotto-section {
-    color: var(--text-color);
-}
-
 .light-theme .lotto-number {
     background-color: var(--lotto-main-bg);
     color: var(--lotto-main-text);
@@ -625,4 +614,39 @@ a:hover {
 @media (max-width: 600px) {
     .weather-table th, .weather-table td { font-size: 0.98em; padding: 0.2em 0.3em; }
     .weather-table { font-size: 1em; }
+}
+
+.header-page-nav {
+    display: inline-flex;
+    margin-left: 0.5rem;
+}
+.header-page-nav-btn {
+    display: inline-block;
+    font-size: 1em;
+    font-family: inherit;
+    color: var(--link-color);
+    padding: 0.25rem;
+    text-decoration: none;
+    line-height: 1rem;
+    width: 1rem;
+    text-align: center;
+}
+
+.header-page-nav-btn:first-child {
+    cursor: w-resize;
+}
+
+.header-page-nav-btn:last-child {
+    cursor: e-resize;
+}
+
+.header-page-nav-btn:hover {
+    background: var(--link-hover-background);
+    color: var(--link-hover-text);
+}
+.header-page-nav-current {
+    font-weight: bold;
+    font-size: 1em;
+    color: var(--text-color);
+    margin: 0 0.1em;
 }

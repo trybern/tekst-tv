@@ -203,7 +203,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const year = String(now.getFullYear()).slice(-2);
         const dateString = `${weekdayShort[now.getDay()]} ${day}.${month}.${year}`;
         const timeHtml = `<span class="header-time">${dateString}</span>`;
-        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}</span><span class="site-title-header" id="teksttv-title" style="cursor:pointer;text-decoration:none;color:inherit">«Tekst-TV»</span>${timeHtml}</div>`;
+
+        // Finn sidetall fra pageTitle (f.eks. "700", "100 (1/5)", "Sport 200")
+        let pageNum = null;
+        const match = pageTitle.match(/(\d{3,})/);
+        if (match) {
+            pageNum = parseInt(match[1], 10);
+        }
+        let navHtml = '';
+        if (pageNum && pageNum >= 100 && pageNum <= 999) {
+            const prevPage = pageNum === 100 ? 999 : pageNum - 1;
+            const nextPage = pageNum === 999 ? 100 : pageNum + 1;
+            navHtml = `
+                <a href="#${prevPage}" class="header-page-nav-btn" aria-label="gå til side ${prevPage}">&lt;</a>
+                <a href="#${nextPage}" class="header-page-nav-btn" aria-label="gå til side ${nextPage}">&gt;</a>
+            `;
+        }
+        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}${navHtml ? '<span class=\"header-page-nav\">'+navHtml+'</span>' : ''}</span><span class="site-title-header" id="teksttv-title" style="cursor:pointer;text-decoration:none;color:inherit">«Tekst-TV»</span>${timeHtml}</div>`;
         const teksttvTitle = document.getElementById('teksttv-title');
         if (teksttvTitle) {
             teksttvTitle.onclick = () => { window.location.hash = ''; };
@@ -263,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <a href="#200" class="front-page-link"><span class="front-page-title">Sport</span><span class="front-page-page">200</span></a>
         <a href="#300" class="front-page-link"><span class="front-page-title">Været</span><span class="front-page-page">300</span></a>
         <a href="#700" class="front-page-link"><span class="front-page-title">Tipping</span><span class="front-page-page">700</span></a>
-        <a href="#800" class="front-page-link"><span class="front-page-title">Info om siden</span><span class="front-page-page">800</span></a>
+        <a href="#800" class="front-page-link"><span class="front-page-title">Om siden</span><span class="front-page-page">800</span></a>
         <a href="#toggle-autoupdate" class="front-page-link"><span class="front-page-title">Auto-oppdatering</span><span class="front-page-page">${autoUpdateEnabled ? 'PÅ' : 'AV'}</span></a>
         <button id="theme-toggle" class="front-page-link" style="font:inherit;background:none;border:none;cursor:pointer;padding:0;margin:0;display:flex;align-items:baseline;"><span class="front-page-title">Fargetema</span><span class="front-page-page">${document.body.classList.contains('light-theme') ? 'Lys' : 'Mørk'}</span></button>
     </div>
@@ -339,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `<span class="time">${time}</span> <span class="article-description">${descriptionHtml}</span>`;
         html += `<span class="published-info">Publisert: ${pubDate.toLocaleString('no-NO')}</span>`;
 
-        html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK</a></div>`;
+        html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK -></a></div>`;
         
         html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
 
@@ -516,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const html = `
             <div class="article-colophon">
-                <span class="article-title">OM DENNE SIDEN</span>
+                <span class="article-title">OM SIDEN</span>
                 <span class="article-paragraph">
                     Dette er en hyllest til tekst-TV, <a href="https://veldigsnill.no" target="_blank">laget av Trygve</a>.
                     Her kan du lese nyheter, og etter hvert kanskje mer?
@@ -571,26 +587,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     html += `<div class="lotto-date">${formattedDate}</div>`;
                 }
                 
-                // Vis hovedtallene
-                html += '<div class="lotto-section">Tall:</div>';
+                // Vis alle tallene samlet
                 html += '<div class="lotto-numbers">';
                 lottoData.mainNumbers.forEach(number => {
                     html += `<span class="lotto-number">${number}</span>`;
                 });
+                if (lottoData.extraNumber) {
+                    html += `<span class="lotto-number extra">${lottoData.extraNumber}</span>`;
+                }
                 html += '</div>';
                 
-                // Vis tilleggstallet hvis tilgjengelig
-                if (lottoData.extraNumber) {
-                    html += '<div class="lotto-section">Tilleggstall:</div>';
-                    html += '<div class="lotto-numbers">';
-                    html += `<span class="lotto-number extra">${lottoData.extraNumber}</span>`;
-                    html += '</div>';
-                    
-                    // Lenke til Norsk Tipping direkte under tilleggstallet
-                    html += '<div class="lotto-external-link">';
-                    html += '<a href="https://www.norsk-tipping.no/lotteri/lotto/resultater" target="_blank">Se hos Norsk Tipping</a>';
-                    html += '</div>';
-                }
+                // Lenke til Norsk Tipping rett under tallene
+                html += '<div class="lotto-external-link">';
+                html += '<a href="https://www.norsk-tipping.no/lotteri/lotto/resultater" target="_blank">Se hos Norsk Tipping</a>';
+                html += '</div>';
                 
                 // Kolofon-lenke til forsiden
                 html += '<div class="colophon-navigation">';
@@ -694,23 +704,23 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `<span class="article-title">${article.title.toUpperCase()}</span>`;
         html += `<span class="time">${time}</span> <span class="article-description">${descriptionHtml}</span>`;
         html += `<span class="published-info">Publisert: ${pubDate.toLocaleString('no-NO')}</span>`;
-        html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK</a></div>`;
+        html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK -></a></div>`;
         html += `<div class="colophon-navigation"><a href="#">Forsiden (100)</a> | <a href="#200">Sport (200)</a></div>`;
         contentElement.innerHTML = html;
     }
 
     function setMeta(page) {
-        let title = '"Tekst-TV" på nett – Siste nytt fra NRK';
+        let title = '"Tekst-TV"';
         let desc = 'En moderne hyllest til Tekst-TV. Få de siste nyhetene fra NRK og sjekk været, presentert med den klassiske pikselerte estetikken.';
 
         if (page === 300) {
             title = '"Tekst-TV Vær" – Sjekk været for Oslo i klassisk Tekst-TV-stil';
             desc = 'Sjekk oppdatert værvarsel for Oslo, presentert med den klassiske Tekst-TV-estetikken. Data fra MET Norway.';
         } else if (page === 700) {
-            title = '"Tekst-TV Lotto" – Siste Lottoresultater i Tekst-TV-format';
+            title = '"Tekst-TV Lotto" – Siste Lottoresultater';
             desc = 'Se de nyeste Lotto-tallene fra Norsk Tipping, presentert i ekte Tekst-TV-stil.';
         } else if (page === 800) {
-            title = 'Om "Tekst-TV" på nett – Info om prosjektet';
+            title = 'Om "Tekst-TV" på nett';
             desc = 'Les mer om Tekst-TV på nett, prosjektets bakgrunn og tekniske detaljer.';
         } else if (page === 200) {
             title = 'Sport 200 – NRK Sport';
