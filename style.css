@@ -138,6 +138,7 @@ a:hover {
     color: var(--text-color);
     text-decoration: none;
     opacity: 0.6;
+    padding: 0.25rem;
 }
 
 .feed-item:hover {
@@ -166,17 +167,28 @@ a:hover {
     text-align: right;
 }
 
+.front-page-link {
+    margin-bottom: 0.5rem;
+    gap: 1rem
+}
+
+.front-page-lead-title,
+.front-page-title,
+.front-page-link {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+}
+
 .front-page-link,
 .front-page-lead {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
     position: relative;
-    overflow: hidden;
     line-height: 1.1;
-    margin-bottom: 0.75rem;
     align-content: center;
-    min-height: 2rem;
 }
 
 .front-page-link:hover {
@@ -198,27 +210,17 @@ a:hover {
 }
 
 .front-page-title {
-    /* white-space: nowrap; */
-    overflow: hidden;
-    text-overflow: ellipsis;
     position: relative;
-    min-height: 1.5rem;
     align-content: center;
     color: var(--text-color);
     line-height: 1.25rem;
-    height: 2.5rem;
-    padding: 0.25;
+    padding: 0.25rem;
+    text-wrap-style: balance;
 }
 
 .front-page-page {
-    background-color: var(--background-color);
-    padding: 0;
-    white-space: nowrap;
-    min-width: 3.5ch;
-    flex-shrink: 0;
     text-align: right;
-    z-index: 1;
-    place-content: center;
+    padding: 0.25rem;
 }
 
 .frontpage-title-404 {
@@ -453,13 +455,6 @@ a:hover {
     font-size: 2rem;
     font-family: 'Teletext50-ExtraCondensed', 'Courier New', Courier, monospace;
     line-height: 2.25rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    text-wrap-style: balance;
     height: unset;
     min-height: 2.5rem;
 }
