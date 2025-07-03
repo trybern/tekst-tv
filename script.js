@@ -319,13 +319,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderHeader(`${article.page}`);
 
+        let html = '';
+
         const pubDate = new Date(article.pubDate);
         const time = pubDate.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
 
         const prevArticle = articleIndex > 0 ? articles[articleIndex - 1] : null;
         const nextArticle = articleIndex < articles.length - 1 ? articles[articleIndex + 1] : null;
         
-        let html = '<div class="article-navigation">';
+        html += '<div class="article-navigation">';
 
         // Alltid tre kolonner: Forrige | Forsiden | Neste
         if (prevArticle) {
@@ -342,6 +344,17 @@ document.addEventListener('DOMContentLoaded', () => {
             html += '<span></span>';
         }
         html += '</div>';
+
+        // Vis ascii-djevel på side 666
+        if (page === 666) {
+            html += `<pre class="ascii-devil">
+    (\\_/)
+   ( •_•)
+  / >\\ 666
+ /\\___/\\
+   V V
+ </pre>`;
+        }
 
         const descriptionHtml = article.description
             .split('\n')
@@ -752,6 +765,18 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (page === 200) {
                 sportPage = 0;
                 fetchSport().then(() => renderSportPage());
+            } else if (page === 666 && articles.findIndex(a => a.page === 666) === -1) {
+                // Spesialside for djevelen
+                renderHeader('666');
+                contentElement.className = '';
+                contentElement.innerHTML = `<pre class="ascii-devil">
+    (\\_/)
+   ( •_•)
+  / >\\ 666
+ /\\___/\\
+   V V
+ </pre>
+<div class='colophon-navigation'><a href='#'>Forsiden (100)</a></div>`;
             } else if (!isNaN(page) && page > 100) {
                 // Dynamisk grense for sportsartikler
                 if (page >= 201 && page < 201 + sportArticles.length) {
