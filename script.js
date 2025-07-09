@@ -216,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const nextPage = pageNum === 999 ? 100 : pageNum + 1;
             navHtml = `
                 <a href="#${prevPage}" class="header-page-nav-btn" aria-label="gå til side ${prevPage}">&lt;</a>
+                <span class="header-page-nav-btn keyboard-button" aria-label="vis tastatur">⌨</span>
                 <a href="#${nextPage}" class="header-page-nav-btn" aria-label="gå til side ${nextPage}">&gt;</a>
             `;
         }
@@ -233,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const end = start + articlesPerPage;
         const pageArticles = articles.slice(start, end);
 
-        renderHeader(`100 (${frontPage + 1}/${totalPages})`);
+        renderHeader(`100`);
 
         let html = `<div class=\"frontpage-title\">«Tekst-TV»</div>`;
 
@@ -414,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderWeatherPage = async () => {
         contentElement.className = '';
-        renderHeader('Været for Oslo');
+        renderHeader('300');
         contentElement.innerHTML = '<div class="frontpage-title">Været for Oslo</div>Laster værdata...';
         try {
             const lat = 59.9139;
@@ -644,7 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSportPage() {
         contentElement.className = '';
-        renderHeader('Sport 200');
+        renderHeader('200');
         const totalPages = Math.ceil(sportArticles.length / sportArticlesPerPage);
         const start = sportPage * sportArticlesPerPage;
         const end = start + sportArticlesPerPage;
@@ -772,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 contentElement.innerHTML = `<pre class="ascii-devil">
     (\\_/)
    ( •_•)
-  / >\\ 666
+  / >\\ 666 \\
  /\\___/\\
    V V
  </pre>
@@ -811,4 +812,103 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sett riktig tekst ved lasting
         themeToggle.textContent = document.body.classList.contains('light-theme') ? 'Mørkt tema' : 'Lyst tema';
     }
+
+    // --- Keyboard overlay ---
+    // Opprett overlay-elementet (skjult som standard)
+    const keyboardOverlay = document.createElement('div');
+    keyboardOverlay.id = 'keyboard-overlay';
+    // Fjern inline style, la kun id stå igjen
+    keyboardOverlay.innerHTML = `
+        <div class="keyboard-modal">
+            <div class="keyboard-goto-label">Gå til <span id="keyboard-goto-value">...</span></div>
+            <div class="keyboard-grid">
+                <button class="keyboard-key" data-key="1">1</button>
+                <button class="keyboard-key" data-key="2">2</button>
+                <button class="keyboard-key" data-key="3">3</button>
+                <button class="keyboard-key" data-key="4">4</button>
+                <button class="keyboard-key" data-key="5">5</button>
+                <button class="keyboard-key" data-key="6">6</button>
+                <button class="keyboard-key" data-key="7">7</button>
+                <button class="keyboard-key" data-key="8">8</button>
+                <button class="keyboard-key" data-key="9">9</button>
+            </div>
+            <div class="keyboard-cancel-row"><button class="keyboard-cancel">Avbryt</button></div>
+        </div>
+    `;
+    document.body.appendChild(keyboardOverlay);
+
+    let keyboardInput = [];
+    function updateKeyboardDisplay() {
+        const valueSpan = document.getElementById('keyboard-goto-value');
+        let display = '';
+        for (let i = 0; i < 3; i++) {
+            display += keyboardInput[i] ? keyboardInput[i] : '.';
+        }
+        valueSpan.textContent = display;
+    }
+    function openKeyboard() {
+        keyboardInput = [];
+        updateKeyboardDisplay();
+        keyboardOverlay.style.display = 'flex';
+        setTimeout(() => {
+            keyboardOverlay.classList.add('active');
+        }, 10);
+    }
+    function closeKeyboard() {
+        keyboardOverlay.style.display = 'none';
+        keyboardOverlay.classList.remove('active');
+    }
+    // Åpne keyboard når man trykker på .keyboard-button
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.keyboard-button');
+        if (btn) {
+            openKeyboard();
+        }
+    });
+    // Håndter tastetrykk på grid
+    keyboardOverlay.addEventListener('click', (e) => {
+        if (e.target.classList.contains('keyboard-key')) {
+            if (keyboardInput.length < 3) {
+                keyboardInput.push(e.target.dataset.key);
+                updateKeyboardDisplay();
+                if (keyboardInput.length === 3) {
+                    // Naviger til valgt side
+                    const pageNum = keyboardInput.join('');
+                    closeKeyboard();
+                    window.location.hash = `#${pageNum}`;
+                }
+            }
+        } else if (e.target.classList.contains('keyboard-cancel')) {
+            closeKeyboard();
+        } else if (e.target === keyboardOverlay) {
+            closeKeyboard();
+        }
+    });
+    // ESC for å lukke
+    document.addEventListener('keydown', (e) => {
+        if (keyboardOverlay.style.display !== 'none' && (e.key === 'Escape' || e.key === 'Esc')) {
+            closeKeyboard();
+        }
+        // Backspace for å slette siste tall
+        if (keyboardOverlay.style.display !== 'none' && e.key === 'Backspace') {
+            if (keyboardInput.length > 0) {
+                keyboardInput.pop();
+                updateKeyboardDisplay();
+            }
+            e.preventDefault();
+        }
+        // Tall direkte fra tastatur
+        if (keyboardOverlay.style.display !== 'none' && /^[1-9]$/.test(e.key)) {
+            if (keyboardInput.length < 3) {
+                keyboardInput.push(e.key);
+                updateKeyboardDisplay();
+                if (keyboardInput.length === 3) {
+                    const pageNum = keyboardInput.join('');
+                    closeKeyboard();
+                    window.location.hash = `#${pageNum}`;
+                }
+            }
+            e.preventDefault();
+        }
+    });
 });

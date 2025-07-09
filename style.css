@@ -113,16 +113,26 @@ a:hover {
     margin-left: 0.5rem;
 }
 
+
+
 .header-page-nav-btn {
     display: inline-block;
-    font-size: 1em;
     font-family: inherit;
     color: var(--link-color);
     padding: 0.25rem;
     text-decoration: none;
     line-height: 1rem;
-    width: 1rem;
     text-align: center;
+}
+
+.keyboard-button {
+    font-size: 3rem;
+    line-height: 1.25rem;
+    cursor: pointer;
+}
+
+.header-page-nav-btn:not(.keyboard-button) {
+    width: 1rem;
 }
 
 .header-page-nav-btn:first-child {
@@ -596,6 +606,96 @@ a:hover {
     text-align: center;
     color: var(--error-color);
     margin: 1rem 0;
+}
+
+/* --- Keyboard overlay styles --- */
+#keyboard-overlay {
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+#keyboard-overlay.active {
+  display: flex;
+}
+.keyboard-modal {
+  background: var(--background-color);
+  color: #fff;
+  padding: 2rem;
+  min-width: 260px;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.keyboard-modal,
+.keyboard-key,
+#keyboard-goto-value {
+    border: 1px  solid var(--border-color);
+    border-width: 0 1px 1px 0;
+}
+
+.keyboard-goto-label {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.1em;
+}
+#keyboard-goto-value {
+    font-family: 'Teletext50-Condensed', 'Courier New', Courier, monospace;
+    font-size: 2rem;
+    background: #222;
+    padding: 0.25rem 0.5rem;
+}
+.keyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 3rem);
+    grid-gap: 1rem 0.75rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.keyboard-key {
+    font-size: 1.5em;
+    background: #222;
+    color: #fff;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    font-family: 'Teletext50-Condensed', 'Courier New', Courier, monospace;
+}
+.keyboard-key:active, .keyboard-key:focus {
+    background: #555;
+    color: var(--link-color);
+    outline: none;
+}
+.keyboard-cancel-row {
+    margin-top: 0.5rem;
+}
+.keyboard-cancel {
+    font-family: 'Teletext50-Condensed', 'Courier New', Courier, monospace;
+    letter-spacing: 0.1em;
+    border: 1px solid #444;
+    background-color: transparent;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.keyboard-cancel:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+.keyboard-cancel:active, .keyboard-cancel:focus {
+  background: #666;
+  color: var(--link-color);
+  outline: none;
 }
 
 @media (max-width: 768px) {
