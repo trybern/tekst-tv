@@ -831,8 +831,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="keyboard-key" data-key="7">7</button>
                 <button class="keyboard-key" data-key="8">8</button>
                 <button class="keyboard-key" data-key="9">9</button>
+                <button class="keyboard-key" data-key="0">0</button>
+                <button class="keyboard-cancel">Avbryt</button>
             </div>
-            <div class="keyboard-cancel-row"><button class="keyboard-cancel">Avbryt</button></div>
         </div>
     `;
     document.body.appendChild(keyboardOverlay);
