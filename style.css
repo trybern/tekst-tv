@@ -31,6 +31,8 @@
 
 :root {
     --background-color: #111;
+    --background-color-lighter: #222 ;
+    --background-color-lightest: #333;
     --text-color: #eee;
     --link-color: #0ee;
     --link-hover-background: #0ee;
@@ -44,10 +46,13 @@
     --lotto-extra-bg: #ffc9ce;
     --lotto-extra-text: #261440;
     --error-color: #ff0000;
+    --overlay: rgba(127, 127, 127, 0.5);
 }
 
 body.light-theme {
     --background-color: #f7f7f7;
+    --background-color-lighter: #e7e7e7;
+    --background-color-lightest: #d7d7d7;
     --text-color: #222;
     --link-color: #0055cc;
     --link-hover-background: #e0eaff;
@@ -617,6 +622,7 @@ a:hover {
   width: 100vw;
   height: 100vh;
   background: rgba(0,0,0,0.5);
+  background: var(--overlay);
   display: none;
   align-items: center;
   justify-content: center;
@@ -627,7 +633,7 @@ a:hover {
 }
 .keyboard-modal {
   background: var(--background-color);
-  color: #fff;
+  color: var(--text-color);
   padding: 2rem;
   min-width: 260px;
   max-width: 90vw;
@@ -649,7 +655,7 @@ a:hover {
 #keyboard-goto-value {
     font-family: 'Teletext50-Condensed', 'Courier New', Courier, monospace;
     font-size: 2rem;
-    background: #222;
+    background: var(--background-color-lighter);
     padding: 0.25rem 0.5rem;
 }
 .keyboard-grid {
@@ -661,15 +667,15 @@ a:hover {
 }
 .keyboard-key {
     font-size: 1.5em;
-    background: #222;
-    color: #fff;
+    background: var(--background-color-lighter);
+    color: var(--text-color);
     width: 3rem;
     height: 3rem;
     cursor: pointer;
     font-family: 'Teletext50-Condensed', 'Courier New', Courier, monospace;
 }
 .keyboard-key:active, .keyboard-key:focus {
-    background: #555;
+    background: var(--background-color-lightest);
     color: var(--link-color);
     outline: none;
 }
@@ -680,9 +686,9 @@ a:hover {
 .keyboard-cancel {
     font-family: 'Teletext50-Condensed', 'Courier New', Courier, monospace;
     letter-spacing: 0.1em;
-    border: 1px solid #444;
+    border: 1px solid var(--border-color);
     background-color: transparent;
-    color: #fff;
+    color: var(--text-color);
     padding: 0.5rem 1rem;
     font-size: 1rem;
     cursor: pointer;
@@ -690,12 +696,12 @@ a:hover {
 }
 
 .keyboard-cancel:hover {
-    background-color: #444;
-    color: #fff;
+    background-color: var(--background-color-lightest);
+    color: var(--text-color);
 }
 
 .keyboard-cancel:active, .keyboard-cancel:focus {
-  background: #666;
+  background: var(--background-color-lightest);
   color: var(--link-color);
   outline: none;
 }
