@@ -899,7 +899,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
         }
         // Tall direkte fra tastatur
-        if (keyboardOverlay.style.display !== 'none' && /^[1-9]$/.test(e.key)) {
+        if (keyboardOverlay.style.display !== 'none' && /^[0-9]$/.test(e.key)) {
             if (keyboardInput.length < 3) {
                 keyboardInput.push(e.key);
                 updateKeyboardDisplay();
