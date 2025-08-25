@@ -572,6 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderHeader('700');
         contentElement.innerHTML = '<div class="frontpage-title">Lotto</div>Laster resultater...';
         try {
+            // Use Cloudflare Worker proxy to avoid CORS issues with Norsk Tipping API
             const response = await fetch('https://lotto.trygve-bernhardt.workers.dev/');
             console.log('Lotto response status:', response.status);
             console.log('Lotto response headers:', response.headers);
