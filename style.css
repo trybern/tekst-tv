@@ -100,22 +100,42 @@ a:hover {
 
 /* Header og navigasjon */
 .header-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 1rem;
 }
 
 .site-title-header {
     text-align: center;
+    cursor: pointer
+}
+
+.header-time-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .header-time {
     text-align: right;
 }
 
+.header-current-time {
+    text-align: right;
+    color: var(--time-color);
+    font-weight: bold;
+}
+
+.header-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .header-page-nav {
     display: inline-flex;
-    margin-left: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 

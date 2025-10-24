@@ -194,6 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const updateClock = () => {
+        const now = new Date();
+        const timeString = `Kl. ${now.toLocaleTimeString('no-NO', { hour12: false })}`;
+        const timeElement = headerElement.querySelector('.header-current-time');
+        if (timeElement) {
+            timeElement.textContent = timeString;
+        }
+    };
+
     const renderHeader = (pageTitle) => {
         // Norsk ukedagsforkortelse
         const weekdayShort = ['Sø.', 'Ma.', 'Ti.', 'On.', 'To.', 'Fr.', 'Lø.'];
@@ -202,7 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = String(now.getFullYear()).slice(-2);
         const dateString = `${weekdayShort[now.getDay()]} ${day}.${month}.${year}`;
-        const timeHtml = `<span class="header-time">${dateString}</span>`;
+        const timeString = `Kl. ${now.toLocaleTimeString('no-NO', { hour12: false })}`;
+        
+        const timeHtml = `<div class="header-time-container"><span class="header-time">${dateString}</span><span class="header-current-time">${timeString}</span></div>`;
 
         // Finn sidetall fra pageTitle (f.eks. "700", "100 (1/5)", "Sport 200")
         let pageNum = null;
@@ -220,10 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="#${nextPage}" class="header-page-nav-btn" aria-label="gå til side ${nextPage}">&gt;</a>
             `;
         }
-        headerElement.innerHTML = `<div class="header-row"><span class="page-title-header">${pageTitle}${navHtml ? '<span class=\"header-page-nav\">'+navHtml+'</span>' : ''}</span><span class="site-title-header teksttv-title-inline" id="teksttv-title">«Tekst-TV»</span>${timeHtml}</div>`;
+        headerElement.innerHTML = `<div class="header-row"><div class="header-page-container"><span class="page-title-header">${pageTitle}</span>${navHtml ? '<span class=\"header-page-nav\">'+navHtml+'</span>' : ''}</div><span class="site-title-header teksttv-title-inline" id="teksttv-title">«Tekst-TV»</span>${timeHtml}</div>`;
         const teksttvTitle = document.getElementById('teksttv-title');
         if (teksttvTitle) {
             teksttvTitle.onclick = () => { window.location.hash = ''; };
+        }
+        
+        // Start the clock if not already running
+        if (!window.clockInterval) {
+            window.clockInterval = setInterval(updateClock, 1000);
         }
     };
 
@@ -325,26 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const pubDate = new Date(article.pubDate);
         const time = pubDate.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
 
-        const prevArticle = articleIndex > 0 ? articles[articleIndex - 1] : null;
-        const nextArticle = articleIndex < articles.length - 1 ? articles[articleIndex + 1] : null;
         
-        html += '<div class="article-navigation">';
 
-        // Alltid tre kolonner: Forrige | Forsiden | Neste
-        if (prevArticle) {
-            html += `<a href=\"#${prevArticle.page}\"><- Forrige</a>`;
-        } else {
-            html += '<span></span>';
-        }
-
-        html += `<a href=\"#\">Forsiden (100)</a>`;
-
-        if (nextArticle) {
-            html += `<a href=\"#${nextArticle.page}\">Neste -></a>`;
-        } else {
-            html += '<span></span>';
-        }
-        html += '</div>';
 
         // Vis ascii-djevel på side 666
         if (page === 666) {
