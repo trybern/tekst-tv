@@ -49,6 +49,10 @@
     --overlay: rgba(127, 127, 127, 0.5);
 }
 
+* {
+    -webkit-font-smoothing: antialiased;
+}
+
 body.light-theme {
     --background-color: #f7f7f7;
     --background-color-lighter: #e7e7e7;
