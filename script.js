@@ -234,7 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
         headerElement.innerHTML = `<div class="header-row"><div class="header-page-container"><span class="page-title-header">${pageTitle}</span>${navHtml ? '<span class=\"header-page-nav\">'+navHtml+'</span>' : ''}</div><span class="site-title-header teksttv-title-inline" id="teksttv-title">«Tekst-TV»</span>${timeHtml}</div>`;
         const teksttvTitle = document.getElementById('teksttv-title');
         if (teksttvTitle) {
-            teksttvTitle.onclick = () => { window.location.hash = ''; };
+            teksttvTitle.onclick = () => { 
+                frontPage = 0; // Reset to first page
+                window.location.hash = ''; 
+            };
         }
         
         // Start the clock if not already running
@@ -369,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         html += `<div class="external-link-container"><a href="${article.link}" target="_blank">Les på NRK -></a></div>`;
         
+        html += `<div class="colophon-navigation"><a href="#">Tilbake til forsiden (100)</a></div>`;
         html += `<div class="autoupdate-footer"><a href="#toggle-autoupdate">Auto-oppdatering: ${autoUpdateEnabled ? 'PÅ' : 'AV'}</a></div>`;
 
         contentElement.innerHTML = html;
@@ -785,11 +789,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderArticlePage(page);
                 }
             } else {
-                frontPage = 0;
                 renderFrontPage();
             }
         } else {
-            frontPage = 0;
             renderFrontPage();
         }
     };
@@ -908,6 +910,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.hash = `#${pageNum}`;
                 }
             }
+            e.preventDefault();
+        }
+    });
+
+    // Globale piltaster for å navigere mellom sider 100–999
+    document.addEventListener('keydown', (e) => {
+        // Ikke overstyr standard snarveier med modifikatortaster
+        if (e.altKey || e.metaKey || e.ctrlKey) {
+            return;
+        }
+
+        // Unngå å forstyrre skriving i input-felter osv.
+        const target = e.target;
+        const tag = target && target.tagName ? target.tagName.toLowerCase() : '';
+        if (target && (target.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select')) {
+            return;
+        }
+
+        // Naviger kun når tastaturet ikke er åpent
+        if (keyboardOverlay && keyboardOverlay.style.display === 'flex') {
+            return;
+        }
+
+        const hash = window.location.hash;
+        let page = 100;
+        if (hash && /^#\d{3}$/.test(hash)) {
+            page = parseInt(hash.substring(1), 10);
+        }
+
+        if (page < 100 || page > 999) {
+            return;
+        }
+
+        if (e.key === 'ArrowLeft') {
+            const prevPage = page === 100 ? 999 : page - 1;
+            window.location.hash = `#${prevPage}`;
+            e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+            const nextPage = page === 999 ? 100 : page + 1;
+            window.location.hash = `#${nextPage}`;
             e.preventDefault();
         }
     });
