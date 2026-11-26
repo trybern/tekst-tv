@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const feeds = [
         { name: 'NRK Nyheter', url: 'https://www.nrk.no/nyheter/siste.rss' },
-        { name: 'Stor-Oslo', url: 'https://www.nrk.no/stor-oslo/siste.rss' }
+        { name: 'Oslo', url: 'https://www.nrk.no/oslo.rss' }
     ];
     let currentFeedIndex = 0;
 
